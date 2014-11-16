@@ -91,7 +91,9 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
+ //       console.log('allEnemies: ' + allEnemies);
         allEnemies.forEach(function(enemy) {
+  //          console.log('current enemy:' + enemy);
             enemy.update(dt);
         });
         player.update();
@@ -160,6 +162,7 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
+        console.log('In reset function');
         // noop
     }
 
@@ -181,4 +184,9 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
+return(this);
 })(this);
+//console.log('about to call reset at bottom of engine.js');
+//Engine.reset();
+console.log('Engine at end of engine.js: ' + Engine);
+console.log('Engine.canvas.width at end of engine.js: ' + Engine.canvas.width);
