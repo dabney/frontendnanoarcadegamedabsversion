@@ -44,6 +44,45 @@ Enemy.prototype.render = function() {
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
+// Player class
+var Player = function() {
+    // Variables applied to each of our instances go here,
+    // we've provided one for you to get started
+
+    // The image/sprite for our enemies, this uses
+    // a helper we've provided to easily load images
+    this.sprite = 'images/char-cat-girl.png';
+         this.x = 10;
+    this.y = 10;
+  //   this.x = ctx.canvas.width/2 - 50;
+  //  this.y = ctx.canvas.height - 171;
+
+ //   this.x = Math.floor(Math.random() * ctx.canvas.width);
+ //   this.y = Math.floor(Math.random() * ctx.canvas.height);
+}
+
+// Update the player's status
+Player.prototype.update = function(dt) {
+    // You should multiply any movement by the dt parameter
+    // which will ensure the game runs at the same speed for
+    // all computers.
+   //check for collision?
+//    console.log('Engine: ' + Engine);
+ //   console.log('ctx: ' + ctx);
+//        console.log('ctx.canvas.width: ' + ctx.canvas.width);
+
+
+    //this.y = this.y + dt*10;
+}
+
+// Draw the player on the screen, required method for game
+Player.prototype.render = function() {
+  //  console.log('this.sprite:' + this.sprite + ', ' + Resources.get(this.sprite));
+
+
+
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+}
 
 
 // Now instantiate your objects.
@@ -66,8 +105,7 @@ console.log('tmpEnemy x: ' + tmpEnemy.x);
 
 }
 var allEnemies = createEnemies(5);
-console.log('allEnemies length: ' + allEnemies.length);
-var player = new Enemy;
+var player = new Player();
 
 
 

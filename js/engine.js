@@ -175,7 +175,7 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-cat-girl.png'
     ]);
     Resources.onReady(init);
 
@@ -184,9 +184,8 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
-return(this);
 })(this);
 //console.log('about to call reset at bottom of engine.js');
 //Engine.reset();
-console.log('Engine at end of engine.js: ' + Engine);
-console.log('Engine.canvas.width at end of engine.js: ' + Engine.canvas.width);
+//console.log('Engine at end of engine.js: ' + Engine);
+//console.log('Engine.canvas.width at end of engine.js: ' + Engine.canvas.width);
