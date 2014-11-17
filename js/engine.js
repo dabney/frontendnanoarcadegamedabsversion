@@ -15,6 +15,7 @@
  */
 console.log('at top of Engine.js');
 console.log('this:', this);
+
 var Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
@@ -194,10 +195,13 @@ console.log('global: ' + global);
 
     console.log('canvas.width inside Engine: ' + canvas.width);
 console.log('Engine inside of Engine:' + Engine);
+
 })(this);
 //console.log('about to call reset at bottom of engine.js');
 //Engine.reset();
 console.log('Engine outside of Engine:' + Engine);
 
-console.log('Engine at end of engine.js: ' + Engine);
+console.log('window.Engine at end of engine.js: ' + window.Engine);
+
+
 console.log('ctx.canvas.width at end of engine.js: ' + ctx.canvas.width);

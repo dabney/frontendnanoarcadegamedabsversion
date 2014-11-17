@@ -9,6 +9,14 @@ var Enemy = function() {
      this.x = Math.floor(Math.random() * 500);
     this.y = Math.floor(Math.random() * 330);
     this.speedMultiplier = Math.random() * 70;
+    console.log('window inside Enemy: ' + window);
+        console.log('this.win inside Enemy: ' + this.win);
+        console.log('window.win inside Enemy: ' + window.win);
+
+    console.log('window.ctx inside Enemy: ' + window.ctx);
+        console.log('this.ctx inside Enemy: ' + this.ctx);
+        console.log('ctx inside Enemy: ' + ctx);
+
 
  //   this.x = Math.floor(Math.random() * ctx.canvas.width);
  //   this.y = Math.floor(Math.random() * ctx.canvas.height);
@@ -54,8 +62,8 @@ var Player = function() {
                 console.log('window: ' + window);
                 console.log('window.Engine: ' + window.Engine);
                 console.log('window.ctx: ' + window.ctx);
-                console.log('ctx: ' + ctx);
-                console.log('ctx.canvas.width: ' + ctx.canvas.width);
+              //  console.log('ctx: ' + ctx);
+             //   console.log('ctx.canvas.width: ' + ctx.canvas.width);
 
 
                 console.log('window.canvas: ' + window.canvas);
