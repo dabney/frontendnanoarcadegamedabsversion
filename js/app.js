@@ -48,12 +48,27 @@ Enemy.prototype.render = function() {
 var Player = function() {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
+ //   console.log('ctx: ' + ctx);
+        //console.log('Window.ctx.canvas.width: ' + Window.ctx.canvas.width);
+               console.log('inside Player');
+                console.log('window: ' + window);
+                console.log('window.Engine: ' + window.Engine);
+                console.log('window.ctx: ' + window.ctx);
+                console.log('ctx: ' + ctx);
+                console.log('ctx.canvas.width: ' + ctx.canvas.width);
+
+
+                console.log('window.canvas: ' + window.canvas);
+
+        console.log('document: ' + document);
+        console.log('this: ' + this);
+        console.log('this.window: ' + this.window);
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/char-cat-girl.png';
-         this.x = 10;
-    this.y = 10;
+         this.x = 50;
+    this.y = 50;
   //   this.x = ctx.canvas.width/2 - 50;
   //  this.y = ctx.canvas.height - 171;
 
@@ -69,7 +84,7 @@ Player.prototype.update = function(dt) {
    //check for collision?
 //    console.log('Engine: ' + Engine);
  //   console.log('ctx: ' + ctx);
-//        console.log('ctx.canvas.width: ' + ctx.canvas.width);
+ //       console.log('ctx.canvas.width: ' + ctx.canvas.width);
 
 
     //this.y = this.y + dt*10;
@@ -80,8 +95,10 @@ Player.prototype.render = function() {
   //  console.log('this.sprite:' + this.sprite + ', ' + Resources.get(this.sprite));
 
 
-
+//ctx.save();
+//ctx.rotate(180*Math.PI/180);
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+//   ctx.restore();
 }
 
 
@@ -104,7 +121,7 @@ console.log('tmpEnemy x: ' + tmpEnemy.x);
   return(enemyArray);
 
 }
-var allEnemies = createEnemies(5);
+var allEnemies = createEnemies(3);
 var player = new Player();
 
 

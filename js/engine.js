@@ -13,7 +13,8 @@
  * the canvas' context (ctx) object globally available to make writing app.js
  * a little simpler to work with.
  */
-
+console.log('at top of Engine.js');
+console.log('this:', this);
 var Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
@@ -28,7 +29,7 @@ var Engine = (function(global) {
     canvas.width = 505;
     canvas.height = 606;
     doc.body.appendChild(canvas);
-
+console.log('global: ' + global);
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
      */
@@ -184,8 +185,19 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
+
+    console.log('global inside Engine: ' + global);
+        console.log('global.ctx inside Engine: ' + global.ctx);
+
+        console.log('this inside Engine: ' + this);
+        console.log('this.ctx inside Engine: ' + this.ctx);
+
+    console.log('canvas.width inside Engine: ' + canvas.width);
+console.log('Engine inside of Engine:' + Engine);
 })(this);
 //console.log('about to call reset at bottom of engine.js');
 //Engine.reset();
-//console.log('Engine at end of engine.js: ' + Engine);
-//console.log('Engine.canvas.width at end of engine.js: ' + Engine.canvas.width);
+console.log('Engine outside of Engine:' + Engine);
+
+console.log('Engine at end of engine.js: ' + Engine);
+console.log('ctx.canvas.width at end of engine.js: ' + ctx.canvas.width);
