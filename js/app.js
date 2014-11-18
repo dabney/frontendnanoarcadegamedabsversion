@@ -3,6 +3,8 @@ var CANVASWIDTH = 505;
 var CANVASHEIGHT = 606;
 var TILEROWS = 6;
 var TILECOLS = 5;
+var TILEWIDTH = 101;
+var TILEHEIGHT = 83;
 var IMAGEWIDTH = 101;
 var IMAGEHEIGHT = 171;
 var SPEEDCONSTANT = 80;
@@ -53,8 +55,8 @@ var Player = function() {
     // a helper we've provided to easily load images
     this.sprite = 'images/char-cat-girl.png';
 
-  this.x = CANVASWIDTH/2 - IMAGEWIDTH/2;
- this.y = CANVASHEIGHT - IMAGEHEIGHT/2;
+  this.x = CANVASWIDTH/2 - TILEWIDTH/2;
+ this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
 
 }
 
@@ -75,24 +77,48 @@ Player.prototype.render = function() {
 
 // handle keystroke input
 Player.prototype.handleInput = function(direction) {
+    var tmpX;
+    var tmpY;
   //  console.log('this.sprite:' + this.sprite + ', ' + Resources.get(this.sprite));
-    console.log('in handleInput: ' + direction);
     switch(direction) {
         case 'left':
-                player.x = player.x - IMAGEWIDTH;
+                tmpX = player.x - TILEWIDTH;
+                if (!offCanvasEdge(tmpX, player.y)) {
+                    console.log('not offCanvasEdge');
+                    player.x = tmpX;
+                }
+                else {
+                    console.log('offCanvasEdge');
+                }
+                
         break; 
         case 'right':
-                       player.x = player.x - IMAGEWIDTH;
+                       player.x = player.x + TILEWIDTH;
         break;
         case 'up':
-                       player.y = player.y + IMAGEHEIGHT;
+                       player.y = player.y - TILEHEIGHT;
             break;
         case 'down':
-                       player.y = player.y - IMAGEHEIGHT;
+                       player.y = player.y + TILEHEIGHT;
             break;
     }
 }
 
+var offCanvasEdge = function(x, y) {
+    console.log('move to ', x, y);
+    if (x < 0 || x > CANVASWIDTH) {
+        console.log('off canvas');
+        return(true);
+    }
+    else if (y < 0 || y > CANVASHEIGHT) {
+        console.log('off canvas');
+        return(true);
+    }
+    else {
+        console.log('on Canvas');
+        return(false);
+    }
+}
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
