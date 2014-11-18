@@ -84,33 +84,37 @@ Player.prototype.handleInput = function(direction) {
         case 'left':
                 tmpX = player.x - TILEWIDTH;
                 if (!offCanvasEdge(tmpX, player.y)) {
-                    console.log('not offCanvasEdge');
                     player.x = tmpX;
                 }
-                else {
-                    console.log('offCanvasEdge');
-                }
-                
         break; 
         case 'right':
-                       player.x = player.x + TILEWIDTH;
+                       tmpX = player.x + TILEWIDTH;
+                if (!offCanvasEdge(tmpX, player.y)) {
+                    player.x = tmpX;
+                }
         break;
         case 'up':
-                       player.y = player.y - TILEHEIGHT;
+                       tmpY = player.y - TILEHEIGHT;
+                if (!offCanvasEdge(player.x, tmpY)) {
+                    player.y = tmpY;
+                }
             break;
         case 'down':
-                       player.y = player.y + TILEHEIGHT;
+                       tmpY = player.y + TILEHEIGHT;
+                if (!offCanvasEdge(player.x, tmpY)) {
+                    player.y = tmpY;
+                }
             break;
     }
 }
 
 var offCanvasEdge = function(x, y) {
     console.log('move to ', x, y);
-    if (x < 0 || x > CANVASWIDTH) {
+    if (x < 0 || x + IMAGEWIDTH > CANVASWIDTH) {
         console.log('off canvas');
         return(true);
     }
-    else if (y < 0 || y > CANVASHEIGHT) {
+    else if (y < 0 || y + IMAGEHEIGHT > CANVASHEIGHT) {
         console.log('off canvas');
         return(true);
     }
