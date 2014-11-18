@@ -1,6 +1,8 @@
 // Some constants for reference
 var CANVASWIDTH = 505;
 var CANVASHEIGHT = 606;
+var TILEROWS = 6;
+var TILECOLS = 5;
 var IMAGEWIDTH = 101;
 var IMAGEHEIGHT = 171;
 var SPEEDCONSTANT = 80;
@@ -52,7 +54,7 @@ var Player = function() {
     this.sprite = 'images/char-cat-girl.png';
 
   this.x = CANVASWIDTH/2 - IMAGEWIDTH/2;
- this.y = CANVASHEIGHT - IMAGEHEIGHT;
+ this.y = CANVASHEIGHT - IMAGEHEIGHT/2;
 
 }
 
@@ -71,6 +73,25 @@ Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
+// handle keystroke input
+Player.prototype.handleInput = function(direction) {
+  //  console.log('this.sprite:' + this.sprite + ', ' + Resources.get(this.sprite));
+    console.log('in handleInput: ' + direction);
+    switch(direction) {
+        case 'left':
+                player.x = player.x - IMAGEWIDTH;
+        break; 
+        case 'right':
+                       player.x = player.x - IMAGEWIDTH;
+        break;
+        case 'up':
+                       player.y = player.y + IMAGEHEIGHT;
+            break;
+        case 'down':
+                       player.y = player.y - IMAGEHEIGHT;
+            break;
+    }
+}
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
