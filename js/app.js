@@ -56,9 +56,7 @@ var Player = function() {
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/char-cat-girl.png';
-this.column = 3;
   this.x = CANVASWIDTH/2 - TILEWIDTH/2;
-  this.row = 6;
  this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
  this.alive = true;
  this.transparency = 1.0;
@@ -117,14 +115,12 @@ Player.prototype.handleInput = function(direction) {
                 tmpX = player.x - TILEWIDTH;
                 if (!offCanvasEdge(tmpX, player.y)) {
                     player.x = tmpX;
-                    player.column = player.column - 1;
                 }
         break; 
         case 'right':
                        tmpX = player.x + TILEWIDTH;
                 if (!offCanvasEdge(tmpX, player.y)) {
                     player.x = tmpX;
-                player.column = player.column + 1;
 
                 }
         break;
@@ -132,7 +128,6 @@ Player.prototype.handleInput = function(direction) {
                        tmpY = player.y - TILEHEIGHT;
                 if (!offCanvasEdge(player.x, tmpY)) {
                     player.y = tmpY;
-                    player.row = player.row + 1;
 
                 }
             break;
@@ -140,7 +135,6 @@ Player.prototype.handleInput = function(direction) {
                        tmpY = player.y + TILEHEIGHT;
                 if (!offCanvasEdge(player.x, tmpY)) {
                     player.y = tmpY;
-                    player.row = player.row - 1;
 
                 }
             break;
