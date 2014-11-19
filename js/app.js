@@ -9,6 +9,8 @@ var IMAGEWIDTH = 101;
 var IMAGEHEIGHT = 171;
 var SPEEDCONSTANT = 80;
 var NUMENEMIES = 3;
+var DELTATRANSPARENCY = .005;
+var COLLISIONSENSITIVITY = 50;
 
 // Enemies our player must avoid
 var Enemy = function() {
@@ -59,6 +61,7 @@ this.column = 3;
   this.row = 6;
  this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
  this.alive = true;
+ this.transparency = 1.0;
 
 }
 
@@ -71,10 +74,17 @@ Player.prototype.update = function(dt) {
        var i;
 
        for (i = 0; i < NUMENEMIES; i++) {
-    if (collisionDetected(player.x, player.y, allEnemies[i].x, allEnemies[i].y, 100)) {
+    if (collisionDetected(player.x, player.y, allEnemies[i].x, allEnemies[i].y, COLLISIONSENSITIVITY)) {
+   //     console.log('setting player.alive to false');
     player.alive = false;
     }
 }
+    if (!player.alive && player.transparency > 0) {
+        player.transparency = player.transparency - DELTATRANSPARENCY;
+    //    console.log('player.transparency: ' + player.transparency);
+
+    }
+
 
 }
 
@@ -85,10 +95,14 @@ Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
   else {
-    ctx.save()
-    ctx.globalAlpha = .3
+   ctx.save()
+    ctx.globalAlpha = player.transparency;
+  //  ctx.translate(this.x, this.y);
+   // ctx.translate(IMAGEWIDTH/2, IMAGEHEIGHT);
+
+   // ctx.rotate(Math.PI/(2*player.transparency));
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-        ctx.restore();
+   ctx.restore();
 
   }
 }
@@ -135,17 +149,13 @@ Player.prototype.handleInput = function(direction) {
 }
 
 var offCanvasEdge = function(x, y) {
-    console.log('move to ', x, y);
     if (x < 0 || x + IMAGEWIDTH > CANVASWIDTH) {
-        console.log('off canvas');
         return(true);
     }
     else if (y < 0 || y + IMAGEHEIGHT > CANVASHEIGHT) {
-        console.log('off canvas');
         return(true);
     }
     else {
-        console.log('on Canvas');
         return(false);
     }
 }
@@ -153,7 +163,7 @@ var offCanvasEdge = function(x, y) {
 var collisionDetected = function(x1, y1, x2, y2, distance) {
  //   console.log('checking for collision', Math.abs(x1-x2), Math.abs(y1-y2));
     if (Math.abs(x1 - x2) < distance && Math.abs(y1 - y2) < distance) {
-        console.log('collision detected');
+      //  console.log('collision detected');
         return(true);
     }
     else {
