@@ -11,6 +11,7 @@ var SPEEDCONSTANT = 80;
 var NUMENEMIES = 3;
 var DELTATRANSPARENCY = .005;
 var COLLISIONSENSITIVITY = 50;
+var NUMPLAYERLIVES = 3;
 
 // Enemies our player must avoid
 var Enemy = function() {
@@ -60,6 +61,7 @@ var Player = function() {
  this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
  this.alive = true;
  this.transparency = 1.0;
+ this.numlives = NUMPLAYERLIVES;
 
 }
 
@@ -72,11 +74,14 @@ Player.prototype.update = function(dt) {
        var i;
 
        for (i = 0; i < NUMENEMIES; i++) {
-    if (collisionDetected(player.x, player.y, allEnemies[i].x, allEnemies[i].y, COLLISIONSENSITIVITY)) {
+    if (collisionDetected(this.x, this.y, allEnemies[i].x, allEnemies[i].y, COLLISIONSENSITIVITY)) {
    //     console.log('setting player.alive to false');
-    player.alive = false;
-    }
+      this.numlives--;
+      if (this.numlives === 0) {}
+    this.alive = false;
 }
+    }
+
     if (!player.alive && player.transparency > 0) {
         player.transparency = player.transparency - DELTATRANSPARENCY;
     //    console.log('player.transparency: ' + player.transparency);
@@ -91,6 +96,8 @@ Player.prototype.render = function() {
   //  console.log('this.sprite:' + this.sprite + ', ' + Resources.get(this.sprite));
   if (player.alive) {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+        ctx.drawImage(Resources.get('images/Heart.png'), 0, 0);
+
 }
   else {
    ctx.save()
@@ -121,25 +128,21 @@ Player.prototype.handleInput = function(direction) {
                        tmpX = player.x + TILEWIDTH;
                 if (!offCanvasEdge(tmpX, player.y)) {
                     player.x = tmpX;
-
                 }
         break;
         case 'up':
                        tmpY = player.y - TILEHEIGHT;
                 if (!offCanvasEdge(player.x, tmpY)) {
                     player.y = tmpY;
-
                 }
             break;
         case 'down':
                        tmpY = player.y + TILEHEIGHT;
                 if (!offCanvasEdge(player.x, tmpY)) {
                     player.y = tmpY;
-
                 }
             break;
     }
-
 }
 
 var offCanvasEdge = function(x, y) {

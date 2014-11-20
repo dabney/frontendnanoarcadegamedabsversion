@@ -177,7 +177,9 @@ console.log('global: ' + global);
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-cat-girl.png'
+        'images/char-cat-girl.png',
+        'images/Heart.png'
+
     ]);
     Resources.onReady(init);
 
