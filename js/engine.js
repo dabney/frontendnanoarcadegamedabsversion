@@ -30,7 +30,6 @@ var Engine = (function(global) {
     canvas.width = 505;
     canvas.height = 606;
     doc.body.appendChild(canvas);
-console.log('global: ' + global);
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
      */
@@ -95,8 +94,11 @@ console.log('global: ' + global);
     function updateEntities(dt) {
  //       console.log('allEnemies: ' + allEnemies);
         allEnemies.forEach(function(enemy) {
-  //          console.log('current enemy:' + enemy);
             enemy.update(dt);
+        });
+
+        allTreasures.forEach(function(treasure) {
+            treasure.update(dt);
         });
         player.update();
     }
@@ -155,7 +157,9 @@ console.log('global: ' + global);
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
-
+allTreasures.forEach(function(treasure) {
+            treasure.render();
+        });
         player.render();
     }
 
@@ -179,9 +183,8 @@ console.log('global: ' + global);
         'images/enemy-bug.png',
         'images/char-cat-girl.png',
         'images/Heart.png',
-        'images/Gem Blue.png',
-        'images/Gem Green.png',
-        'images/Gem Orange.png'
+        'images/Selector.png',
+        'images/Star.png'
     ]);
     Resources.onReady(init);
 
@@ -191,21 +194,4 @@ console.log('global: ' + global);
      */
     global.ctx = ctx;
 
-    console.log('global inside Engine: ' + global);
-        console.log('global.ctx inside Engine: ' + global.ctx);
-
-        console.log('this inside Engine: ' + this);
-        console.log('this.ctx inside Engine: ' + this.ctx);
-
-    console.log('canvas.width inside Engine: ' + canvas.width);
-console.log('Engine inside of Engine:' + Engine);
-
 })(this);
-//console.log('about to call reset at bottom of engine.js');
-//Engine.reset();
-console.log('Engine outside of Engine:' + Engine);
-
-console.log('window.Engine at end of engine.js: ' + window.Engine);
-
-
-console.log('ctx.canvas.width at end of engine.js: ' + ctx.canvas.width);

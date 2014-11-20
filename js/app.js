@@ -7,7 +7,7 @@ var TILEWIDTH = 101;
 var TILEHEIGHT = 83;
 var IMAGEWIDTH = 101;
 var IMAGEHEIGHT = 171;
-var SPEEDCONSTANT = 80;
+var MAXSPEED = 150;
 var NUMENEMIES = 3;
 var DELTATRANSPARENCY = .01;
 var COLLISIONSENSITIVITY = 50;
@@ -15,19 +15,12 @@ var NUMPLAYERLIVES = 3;
 
 // Enemies our player must avoid
 var Enemy = function() {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
-
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
-     this.x = Math.floor(Math.random() * CANVASWIDTH);
-    this.y = Math.floor(Math.random() * CANVASHEIGHT);
-    this.speedMultiplier = Math.random() * SPEEDCONSTANT;
-
-
- //   this.x = Math.floor(Math.random() * ctx.canvas.width);
- //   this.y = Math.floor(Math.random() * ctx.canvas.height);
+     this.x = Math.floor(Math.random() * CANVASWIDTH); // set enemy x randomly within the width of the canvas
+    this.y = (Math.floor(Math.random() * 3) + 1 )* TILEHEIGHT - 20; //set enemy y randomly to center of one of stone rows
+    this.speedMultiplier = Math.random() * MAXSPEED; // set the enemy speed randomly from 0 to MAXSPEED
 }
 
 // Update the enemy's position, required method for game
@@ -53,7 +46,6 @@ Enemy.prototype.render = function() {
 // a handleInput() method.
 // Player class
 var Player = function() {
- 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/char-cat-girl.png';
@@ -83,7 +75,7 @@ Player.prototype.update = function(dt) {
 }}
     }
 
-    if (!player.alive && player.transparency > 0) {
+    if (!player.alive) {
         player.transparency = player.transparency - DELTATRANSPARENCY;
         if (player.transparency <= 0) {
             this.alive = true;
@@ -102,7 +94,7 @@ Player.prototype.update = function(dt) {
 Player.prototype.render = function() {
   //  console.log('this.sprite:' + this.sprite + ', ' + Resources.get(this.sprite));
       for (var i=0; i < this.numlives; i++) {
-        ctx.drawImage(Resources.get('images/Heart.png'), 10 + i*45, 50, 40, 40);
+        ctx.drawImage(Resources.get('images/Heart.png'), 10 + i*45, 50, 34, 57);
     }
   if (this.alive) {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -128,6 +120,7 @@ Player.prototype.render = function() {
 Player.prototype.handleInput = function(direction) {
     var tmpX;
     var tmpY;
+
     if (this.alive) {
   //  console.log('this.sprite:' + this.sprite + ', ' + Resources.get(this.sprite));
     switch(direction) {
@@ -159,6 +152,33 @@ Player.prototype.handleInput = function(direction) {
 }
 }
 
+// Treasures our player can collect
+var Treasure = function() {
+    // The image/sprite for our enemies, this uses
+    // a helper we've provided to easily load images
+    this.sprite = 'images/Star.png';
+     this.x = Math.floor(Math.random() * CANVASWIDTH); // set enemy x randomly within the width of the canvas
+    this.y = (Math.floor(Math.random() * 3) + 1 )* TILEHEIGHT - 20; //set enemy y randomly to center of one of stone rows
+    this.speedMultiplier = Math.random() * MAXSPEED; // set the enemy speed randomly from 0 to MAXSPEED
+}
+
+// Update the enemy's position, required method for game
+// Parameter: dt, a time delta between ticks
+Treasure.prototype.update = function(dt) {
+    // You should multiply any movement by the dt parameter
+    // which will ensure the game runs at the same speed for
+    // all computers.
+    this.x = this.x + dt * this.speedMultiplier;
+    if (this.x > ctx.canvas.width) {
+        this.x = 10;
+    }
+
+}
+
+// Draw the enemy on the screen, required method for game
+Treasure.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+}
 var offCanvasEdge = function(x, y) {
     if (x < 0 || x + IMAGEWIDTH > CANVASWIDTH) {
         return(true);
@@ -201,10 +221,24 @@ var createPlayer = function() {
     var tmpPlayer = new Player;
     return(tmpPlayer);
 }
+
+var createTreasures = function(numTreasures) {
+  var treasureArray = [];
+  var tmpTreasure;
+  var i;
+
+  for (i=0; i < numTreasures; i++) {
+      tmpTreasure = new Treasure();
+      treasureArray.push(tmpTreasure);
+  }
+  return(treasureArray);
+
+}
+
 var allEnemies = createEnemies(3);
+var allTreasures = createTreasures(3);
+
 var player = createPlayer();
-
-
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
