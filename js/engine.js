@@ -178,8 +178,10 @@ console.log('global: ' + global);
         'images/grass-block.png',
         'images/enemy-bug.png',
         'images/char-cat-girl.png',
-        'images/Heart.png'
-
+        'images/Heart.png',
+        'images/Gem Blue.png',
+        'images/Gem Green.png',
+        'images/Gem Orange.png'
     ]);
     Resources.onReady(init);
 

@@ -9,7 +9,7 @@ var IMAGEWIDTH = 101;
 var IMAGEHEIGHT = 171;
 var SPEEDCONSTANT = 80;
 var NUMENEMIES = 3;
-var DELTATRANSPARENCY = .005;
+var DELTATRANSPARENCY = .01;
 var COLLISIONSENSITIVITY = 50;
 var NUMPLAYERLIVES = 3;
 
@@ -74,16 +74,23 @@ Player.prototype.update = function(dt) {
        var i;
 
        for (i = 0; i < NUMENEMIES; i++) {
+        if (this.alive) {
     if (collisionDetected(this.x, this.y, allEnemies[i].x, allEnemies[i].y, COLLISIONSENSITIVITY)) {
    //     console.log('setting player.alive to false');
       this.numlives--;
       if (this.numlives === 0) {}
     this.alive = false;
-}
+}}
     }
 
     if (!player.alive && player.transparency > 0) {
         player.transparency = player.transparency - DELTATRANSPARENCY;
+        if (player.transparency <= 0) {
+            this.alive = true;
+            this.transparency = 1;
+  this.x = CANVASWIDTH/2 - TILEWIDTH/2;
+ this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
+        }
     //    console.log('player.transparency: ' + player.transparency);
 
     }
@@ -94,9 +101,14 @@ Player.prototype.update = function(dt) {
 // Draw the player on the screen, required method for game
 Player.prototype.render = function() {
   //  console.log('this.sprite:' + this.sprite + ', ' + Resources.get(this.sprite));
-  if (player.alive) {
+      for (var i=0; i < this.numlives; i++) {
+        ctx.drawImage(Resources.get('images/Heart.png'), 10 + i*45, 50, 40, 40);
+    }
+  if (this.alive) {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-        ctx.drawImage(Resources.get('images/Heart.png'), 0, 0);
+        //    console.log('this.numlives', this.numlives);
+
+
 
 }
   else {
@@ -116,33 +128,35 @@ Player.prototype.render = function() {
 Player.prototype.handleInput = function(direction) {
     var tmpX;
     var tmpY;
+    if (this.alive) {
   //  console.log('this.sprite:' + this.sprite + ', ' + Resources.get(this.sprite));
     switch(direction) {
         case 'left':
-                tmpX = player.x - TILEWIDTH;
-                if (!offCanvasEdge(tmpX, player.y)) {
-                    player.x = tmpX;
+                tmpX = this.x - TILEWIDTH;
+                if (!offCanvasEdge(tmpX, this.y)) {
+                    this.x = tmpX;
                 }
         break; 
         case 'right':
-                       tmpX = player.x + TILEWIDTH;
-                if (!offCanvasEdge(tmpX, player.y)) {
-                    player.x = tmpX;
+                       tmpX = this.x + TILEWIDTH;
+                if (!offCanvasEdge(tmpX, this.y)) {
+                    this.x = tmpX;
                 }
         break;
         case 'up':
-                       tmpY = player.y - TILEHEIGHT;
-                if (!offCanvasEdge(player.x, tmpY)) {
-                    player.y = tmpY;
+                       tmpY = this.y - TILEHEIGHT;
+                if (!offCanvasEdge(this.x, tmpY)) {
+                    this.y = tmpY;
                 }
             break;
         case 'down':
-                       tmpY = player.y + TILEHEIGHT;
-                if (!offCanvasEdge(player.x, tmpY)) {
-                    player.y = tmpY;
+                       tmpY = this.y + TILEHEIGHT;
+                if (!offCanvasEdge(this.x, tmpY)) {
+                    this.y = tmpY;
                 }
             break;
     }
+}
 }
 
 var offCanvasEdge = function(x, y) {
