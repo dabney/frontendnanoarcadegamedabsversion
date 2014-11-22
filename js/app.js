@@ -21,6 +21,7 @@ var Enemy = function() {
      this.x = Math.floor(Math.random() * CANVASWIDTH); // set enemy x randomly within the width of the canvas
     this.y = (Math.floor(Math.random() * 3) + 1 )* TILEHEIGHT - 20; //set enemy y randomly to center of one of stone rows
     this.speedMultiplier = Math.random() * MAXSPEED; // set the enemy speed randomly from 0 to MAXSPEED
+
 }
 
 // Update the enemy's position, required method for game
@@ -70,7 +71,7 @@ Player.prototype.update = function(dt) {
     if (collisionDetected(this.x, this.y, allEnemies[i].x, allEnemies[i].y, COLLISIONSENSITIVITY)) {
    //     console.log('setting player.alive to false');
       this.numlives--;
-      if (this.numlives === 0) {}
+      if (this.numlives === 0) { init();}
     this.alive = false;
 }}
     }
@@ -78,6 +79,7 @@ Player.prototype.update = function(dt) {
     if (!player.alive) {
         player.transparency = player.transparency - DELTATRANSPARENCY;
         if (player.transparency <= 0) {
+
             this.alive = true;
             this.transparency = 1;
   this.x = CANVASWIDTH/2 - TILEWIDTH/2;
@@ -120,7 +122,6 @@ Player.prototype.render = function() {
 Player.prototype.handleInput = function(direction) {
     var tmpX;
     var tmpY;
-
     if (this.alive) {
   //  console.log('this.sprite:' + this.sprite + ', ' + Resources.get(this.sprite));
     switch(direction) {
@@ -154,24 +155,17 @@ Player.prototype.handleInput = function(direction) {
 
 // Treasures our player can collect
 var Treasure = function() {
-    // The image/sprite for our enemies, this uses
+    // The image/sprite for our treasures, this uses
     // a helper we've provided to easily load images
+    console.log('window.engine:', window.Engine);
     this.sprite = 'images/Star.png';
-     this.x = Math.floor(Math.random() * CANVASWIDTH); // set enemy x randomly within the width of the canvas
-    this.y = (Math.floor(Math.random() * 3) + 1 )* TILEHEIGHT - 20; //set enemy y randomly to center of one of stone rows
-    this.speedMultiplier = Math.random() * MAXSPEED; // set the enemy speed randomly from 0 to MAXSPEED
+     this.x = Math.floor(Math.random() * 5)* TILEWIDTH; // set enemy x randomly within the width of the canvas
+    this.y = (Math.floor(Math.random() * 3) + 1 )* TILEHEIGHT - 12; //set enemy y randomly to center of one of stone rows
 }
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Treasure.prototype.update = function(dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
-    this.x = this.x + dt * this.speedMultiplier;
-    if (this.x > ctx.canvas.width) {
-        this.x = 10;
-    }
 
 }
 
@@ -179,6 +173,7 @@ Treasure.prototype.update = function(dt) {
 Treasure.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
+
 var offCanvasEdge = function(x, y) {
     if (x < 0 || x + IMAGEWIDTH > CANVASWIDTH) {
         return(true);

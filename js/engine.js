@@ -193,5 +193,5 @@ allTreasures.forEach(function(treasure) {
      * from within their app.js files.
      */
     global.ctx = ctx;
-
+    global.init = init;
 })(this);
