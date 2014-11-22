@@ -11,7 +11,10 @@ var MAXSPEED = 150;
 var NUMENEMIES = 3;
 var DELTATRANSPARENCY = .01;
 var COLLISIONSENSITIVITY = 50;
-var NUMPLAYERLIVES = 3;
+var NUMPLAYERLIVES = 2;
+
+var gameOver = false;
+
 
 // Enemies our player must avoid
 var Enemy = function() {
@@ -71,7 +74,7 @@ Player.prototype.update = function(dt) {
     if (collisionDetected(this.x, this.y, allEnemies[i].x, allEnemies[i].y, COLLISIONSENSITIVITY)) {
    //     console.log('setting player.alive to false');
       this.numlives--;
-      if (this.numlives === 0) { init();}
+
     this.alive = false;
 }}
     }
@@ -79,12 +82,16 @@ Player.prototype.update = function(dt) {
     if (!player.alive) {
         player.transparency = player.transparency - DELTATRANSPARENCY;
         if (player.transparency <= 0) {
+          if (this.numlives === 0) {
+        gameOver = true;
+    }
+    else {
 
             this.alive = true;
             this.transparency = 1;
   this.x = CANVASWIDTH/2 - TILEWIDTH/2;
  this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
-        }
+        }}
     //    console.log('player.transparency: ' + player.transparency);
 
     }
@@ -95,6 +102,7 @@ Player.prototype.update = function(dt) {
 // Draw the player on the screen, required method for game
 Player.prototype.render = function() {
   //  console.log('this.sprite:' + this.sprite + ', ' + Resources.get(this.sprite));
+ 
       for (var i=0; i < this.numlives; i++) {
         ctx.drawImage(Resources.get('images/Heart.png'), 10 + i*45, 50, 34, 57);
     }
@@ -116,13 +124,21 @@ Player.prototype.render = function() {
    ctx.restore();
 
   }
+         if (gameOver) {
+        ctx.save();
+        ctx.translate(50, 50);
+        ctx.font = "48pt Arial";
+        ctx.fillText('GAME OVER', 28, 200);
+        ctx.restore();
+    }
+
 }
 
 // handle keystroke input
 Player.prototype.handleInput = function(direction) {
     var tmpX;
     var tmpY;
-    if (this.alive) {
+    if (!gameOver) {
   //  console.log('this.sprite:' + this.sprite + ', ' + Resources.get(this.sprite));
     switch(direction) {
         case 'left':
@@ -157,10 +173,9 @@ Player.prototype.handleInput = function(direction) {
 var Treasure = function() {
     // The image/sprite for our treasures, this uses
     // a helper we've provided to easily load images
-    console.log('window.engine:', window.Engine);
     this.sprite = 'images/Star.png';
-     this.x = Math.floor(Math.random() * 5)* TILEWIDTH; // set enemy x randomly within the width of the canvas
-    this.y = (Math.floor(Math.random() * 3) + 1 )* TILEHEIGHT - 12; //set enemy y randomly to center of one of stone rows
+     this.x = Math.floor(Math.random() * 5)* TILEWIDTH; // set treasuer x randomly within the width of the canvas
+    this.y = (Math.floor(Math.random() * 3) + 1 )* TILEHEIGHT - 12; //set treasure y randomly to center of one of stone rows
 }
 
 // Update the enemy's position, required method for game
