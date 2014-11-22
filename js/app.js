@@ -12,7 +12,7 @@ var NUMENEMIES = 3;
 var DELTATRANSPARENCY = .01;
 var COLLISIONSENSITIVITY = 50;
 var NUMPLAYERLIVES = 2;
-
+var NUMTREASURES = 3;
 var gameOver = false;
 
 
@@ -33,11 +33,12 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
+    if (!gameOver) {
     this.x = this.x + dt * this.speedMultiplier;
     if (this.x > ctx.canvas.width) {
         this.x = 10;
     }
-
+  }
 }
 
 // Draw the enemy on the screen, required method for game
@@ -57,7 +58,8 @@ var Player = function() {
  this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
  this.alive = true;
  this.transparency = 1.0;
- this.numlives = NUMPLAYERLIVES;
+ this.numLives = NUMPLAYERLIVES;
+ this.numTreasures = 0;
 
 }
 
@@ -73,16 +75,32 @@ Player.prototype.update = function(dt) {
         if (this.alive) {
     if (collisionDetected(this.x, this.y, allEnemies[i].x, allEnemies[i].y, COLLISIONSENSITIVITY)) {
    //     console.log('setting player.alive to false');
-      this.numlives--;
+      this.numLives--;
 
     this.alive = false;
-}}
+}
+}
+    }
+
+           for (i = 0; i < NUMTREASURES; i++) {
+        if (this.alive) {
+    if (collisionDetected(this.x, this.y, allTreasures[i].x, allTreasures[i].y, COLLISIONSENSITIVITY)) {
+   //     console.log('setting player.alive to false');
+      this.numTreasures++;
+
+      allTreasures[i].capture();
+      if (this.numTreasures === NUMTREASURES) {
+        gameOver = true;
+      }
+
+}
+}
     }
 
     if (!player.alive) {
         player.transparency = player.transparency - DELTATRANSPARENCY;
         if (player.transparency <= 0) {
-          if (this.numlives === 0) {
+          if (this.numLives === 0) {
         gameOver = true;
     }
     else {
@@ -103,12 +121,12 @@ Player.prototype.update = function(dt) {
 Player.prototype.render = function() {
   //  console.log('this.sprite:' + this.sprite + ', ' + Resources.get(this.sprite));
  
-      for (var i=0; i < this.numlives; i++) {
+      for (var i=0; i < this.numLives; i++) {
         ctx.drawImage(Resources.get('images/Heart.png'), 10 + i*45, 50, 34, 57);
     }
   if (this.alive) {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-        //    console.log('this.numlives', this.numlives);
+        //    console.log('this.numLives', this.numLives);
 
 
 
@@ -121,16 +139,20 @@ Player.prototype.render = function() {
 
    // ctx.rotate(Math.PI/(2*player.transparency));
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+                 if (gameOver) {
+        ctx.font = "48pt Arial";
+              if (this.numTreasures === NUMTREASURES) {
+                console.log('you won');
+        ctx.fillText('YOU WON!!!', 28, 200);}
+        else {
+        ctx.fillText('GAME OVER', 28, 200);}
+    }
+
+
    ctx.restore();
 
   }
-         if (gameOver) {
-        ctx.save();
-        ctx.translate(50, 50);
-        ctx.font = "48pt Arial";
-        ctx.fillText('GAME OVER', 28, 200);
-        ctx.restore();
-    }
+  ctx.fillText('Score ' + this.numTreasures, CANVASWIDTH - 50, 80);
 
 }
 
@@ -176,6 +198,7 @@ var Treasure = function() {
     this.sprite = 'images/Star.png';
      this.x = Math.floor(Math.random() * 5)* TILEWIDTH; // set treasuer x randomly within the width of the canvas
     this.y = (Math.floor(Math.random() * 3) + 1 )* TILEHEIGHT - 12; //set treasure y randomly to center of one of stone rows
+this.captured = false;
 }
 
 // Update the enemy's position, required method for game
@@ -186,7 +209,9 @@ Treasure.prototype.update = function(dt) {
 
 // Draw the enemy on the screen, required method for game
 Treasure.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    if (!this.captured) {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    }
 }
 
 var offCanvasEdge = function(x, y) {
@@ -201,6 +226,14 @@ var offCanvasEdge = function(x, y) {
     }
 }
 
+// Update the enemy's position, required method for game
+// Parameter: dt, a time delta between ticks
+Treasure.prototype.capture = function() {
+    this.captured = true;
+    this.x = -100;
+    this.y = -100;
+
+}
 var collisionDetected = function(x1, y1, x2, y2, distance) {
  //   console.log('checking for collision', Math.abs(x1-x2), Math.abs(y1-y2));
     if (Math.abs(x1 - x2) < distance && Math.abs(y1 - y2) < distance) {
@@ -245,8 +278,8 @@ var createTreasures = function(numTreasures) {
 
 }
 
-var allEnemies = createEnemies(3);
-var allTreasures = createTreasures(3);
+var allEnemies = createEnemies(NUMENEMIES);
+var allTreasures = createTreasures(NUMTREASURES);
 
 var player = createPlayer();
 
