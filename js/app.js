@@ -7,12 +7,16 @@ var TILEWIDTH = 101;
 var TILEHEIGHT = 83;
 var IMAGEWIDTH = 101;
 var IMAGEHEIGHT = 171;
-var MAXSPEED = 150;
+var MAXSPEED = 200;
 var NUMENEMIES = 3;
 var DELTATRANSPARENCY = .01;
 var COLLISIONSENSITIVITY = 50;
 var NUMPLAYERLIVES = 2;
-var NUMTREASURES = 3;
+var NUMTREASURES = 5;
+var VALIDTREASUREPOSITIONS = [
+    {row: 1,col:0}, {row: 1,col:1}, {row: 1,col:2}, {row: 1,col:3}, {row: 1,col:4}, 
+    {row: 2,col:0}, {row: 2,col:1}, {row: 2,col:2}, {row: 2,col:3}, {row: 2,col:4},
+    {row: 3,col:0}, {row: 3,col:1}, {row: 3,col:2}, {row: 3,col:3}, {row: 3,col:4}];
 var gameOver = false;
 
 
@@ -65,73 +69,58 @@ var Player = function() {
 
 // Update the player's status
 Player.prototype.update = function(dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
-   //check for collision?
-       var i;
+  var i;
+if (!gameOver) {
+// if player is still alive check for collisions with enemies and treasures
+  if (this.alive) {
+  for (i = 0; i < NUMENEMIES; i++) {
 
-       for (i = 0; i < NUMENEMIES; i++) {
-        if (this.alive) {
-    if (collisionDetected(this.x, this.y, allEnemies[i].x, allEnemies[i].y, COLLISIONSENSITIVITY)) {
-   //     console.log('setting player.alive to false');
-      this.numLives--;
+      if (collisionDetected(this.x, this.y, allEnemies[i].x, allEnemies[i].y, COLLISIONSENSITIVITY)) {
+        this.numLives--;
+        this.alive = false;
+      }
+  }
 
-    this.alive = false;
-}
-}
-    }
-
-           for (i = 0; i < NUMTREASURES; i++) {
-        if (this.alive) {
-    if (collisionDetected(this.x, this.y, allTreasures[i].x, allTreasures[i].y, COLLISIONSENSITIVITY)) {
-   //     console.log('setting player.alive to false');
-      this.numTreasures++;
-
-      allTreasures[i].capture();
-      if (this.numTreasures === NUMTREASURES) {
-        gameOver = true;
+  for (i = 0; i < NUMTREASURES; i++) {
+      if (collisionDetected(this.x, this.y, allTreasures[i].x, allTreasures[i].y, COLLISIONSENSITIVITY)) {
+        this.numTreasures++;
+        allTreasures[i].capture();
+        if (this.numTreasures === NUMTREASURES) {
+            console.log('all treasures found');
+          gameOver = true;
+        }
       }
 
+  }
 }
-}
-    }
-
-    if (!player.alive) {
-        player.transparency = player.transparency - DELTATRANSPARENCY;
-        if (player.transparency <= 0) {
-          if (this.numLives === 0) {
+// else start increasing the player's transparency to create a fading away animation
+  else {
+    player.transparency = player.transparency - DELTATRANSPARENCY;
+    // once player image is completely transparent
+    if (player.transparency <= 0) {
+    // if player's lives are gone then it's game over
+      if (this.numLives === 0) {
         gameOver = true;
+      }
+      // if player still has lives left then reset him
+      else {
+        this.alive = true;
+        this.transparency = 1;
+        this.x = CANVASWIDTH/2 - TILEWIDTH/2;
+        this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
+      }
     }
-    else {
-
-            this.alive = true;
-            this.transparency = 1;
-  this.x = CANVASWIDTH/2 - TILEWIDTH/2;
- this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
-        }}
     //    console.log('player.transparency: ' + player.transparency);
 
-    }
-
-
+  }
+}
 }
 
 // Draw the player on the screen, required method for game
-Player.prototype.render = function() {
-  //  console.log('this.sprite:' + this.sprite + ', ' + Resources.get(this.sprite));
- 
-      for (var i=0; i < this.numLives; i++) {
+Player.prototype.render = function() { 
+    for (var i=0; i < this.numLives; i++) {
         ctx.drawImage(Resources.get('images/Heart.png'), 10 + i*45, 50, 34, 57);
     }
-  if (this.alive) {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-        //    console.log('this.numLives', this.numLives);
-
-
-
-}
-  else {
    ctx.save()
     ctx.globalAlpha = player.transparency;
   //  ctx.translate(this.x, this.y);
@@ -142,7 +131,6 @@ Player.prototype.render = function() {
                  if (gameOver) {
         ctx.font = "48pt Arial";
               if (this.numTreasures === NUMTREASURES) {
-                console.log('you won');
         ctx.fillText('YOU WON!!!', 28, 200);}
         else {
         ctx.fillText('GAME OVER', 28, 200);}
@@ -151,7 +139,7 @@ Player.prototype.render = function() {
 
    ctx.restore();
 
-  }
+
   ctx.fillText('Score ' + this.numTreasures, CANVASWIDTH - 50, 80);
 
 }
@@ -160,7 +148,7 @@ Player.prototype.render = function() {
 Player.prototype.handleInput = function(direction) {
     var tmpX;
     var tmpY;
-    if (!gameOver) {
+    if (!gameOver || !player.alive) {
   //  console.log('this.sprite:' + this.sprite + ', ' + Resources.get(this.sprite));
     switch(direction) {
         case 'left':
@@ -193,11 +181,15 @@ Player.prototype.handleInput = function(direction) {
 
 // Treasures our player can collect
 var Treasure = function() {
+    var randomPositionIndex = Math.floor(Math.random() * VALIDTREASUREPOSITIONS.length);
+    console.log('random index: ' + randomPositionIndex);
     // The image/sprite for our treasures, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/Star.png';
-     this.x = Math.floor(Math.random() * 5)* TILEWIDTH; // set treasuer x randomly within the width of the canvas
-    this.y = (Math.floor(Math.random() * 3) + 1 )* TILEHEIGHT - 12; //set treasure y randomly to center of one of stone rows
+    console.log('random treasure position: ' + VALIDTREASUREPOSITIONS[randomPositionIndex].row + ', ' + VALIDTREASUREPOSITIONS[randomPositionIndex].col);
+     this.x = VALIDTREASUREPOSITIONS[randomPositionIndex].col * TILEWIDTH; // set treasuer x randomly within the width of the canvas
+    this.y = VALIDTREASUREPOSITIONS[randomPositionIndex].row * TILEHEIGHT - 12; //set treasure y randomly to center of one of stone rows
+VALIDTREASUREPOSITIONS.splice(randomPositionIndex, 1);
 this.captured = false;
 }
 
@@ -254,6 +246,7 @@ var createEnemies = function(numEnemies) {
 
   for (i=0; i < numEnemies; i++) {
       tmpEnemy = new Enemy();
+
       enemyArray.push(tmpEnemy);
   }
   return(enemyArray);
@@ -282,6 +275,9 @@ var allEnemies = createEnemies(NUMENEMIES);
 var allTreasures = createTreasures(NUMTREASURES);
 
 var player = createPlayer();
+
+var sound = document.getElementsByTagName("audio")[0];
+sound.play();
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
