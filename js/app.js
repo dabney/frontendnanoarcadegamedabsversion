@@ -276,8 +276,6 @@ var allTreasures = createTreasures(NUMTREASURES);
 
 var player = createPlayer();
 
-var sound = document.getElementsByTagName("audio")[0];
-sound.play();
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
