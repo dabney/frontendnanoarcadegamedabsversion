@@ -85,9 +85,12 @@ Player.prototype.render = function() {
   for (var i=0; i < this.numLives; i++) {
     ctx.drawImage(Resources.get(this.lifeIcon), 10 + i*45, 50, 34, 57);
   }
-  ctx.save()
-  ctx.globalAlpha = player.opacity;
-  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  // Display the player's score in the upper right corner
+  ctx.fillText('Score ' + this.numTreasures, CANVASWIDTH - 95, 80);
+  ctx.save(); // save the context so we can restore after making our changes
+  ctx.globalAlpha = this.opacity; // set alpha to current player's opacity for death sequence
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y); // Draw the player's sprite at her current x,y
+  // If the game is over display appropriate message
   if (gameOver) {
     ctx.font = "48pt Arial";
     if (this.numTreasures === NUMTREASURES) {
@@ -95,45 +98,42 @@ Player.prototype.render = function() {
     else {
       ctx.fillText('GAME OVER', 39, 200);}
   }
-  ctx.restore();
-  ctx.fillText('Score ' + this.numTreasures, CANVASWIDTH - 95, 80);
+  ctx.restore(); // restore context to previous state
 
 }
 
 // handle keystroke input
 Player.prototype.handleInput = function(direction) {
-    var tmpX;
-    var tmpY;
-    if (!gameOver || !player.alive) {
-  //  console.log('this.sprite:' + this.sprite + ', ' + Resources.get(this.sprite));
+  var tmpX;
+  var tmpY;
+  // If the game is not over and the player is not dead
+  if (!gameOver || !player.alive) {
     switch(direction) {
-        case 'left':
-                tmpX = this.x - TILEWIDTH;
-                if (!offCanvasEdge(tmpX, this.y)) {
-                    this.x = tmpX;
-                }
-        break; 
-        case 'right':
-                       tmpX = this.x + TILEWIDTH;
-                if (!offCanvasEdge(tmpX, this.y)) {
-                    this.x = tmpX;
-                }
-        break;
-        case 'up':
-                       tmpY = this.y - TILEHEIGHT;
-                if (!offCanvasEdge(this.x, tmpY)) {
-                    this.y = tmpY;
-                }
-            break;
-        case 'down':
-                       tmpY = this.y + TILEHEIGHT;
-                if (!offCanvasEdge(this.x, tmpY)) {
-                    this.y = tmpY;
-                }
-            break;
+      case 'left':
+        tmpX = this.x - TILEWIDTH;
+        tmpY = this.y;
+      break; 
+      case 'right':
+        tmpX = this.x + TILEWIDTH;
+        tmpY = this.y;
+      break;
+      case 'up':
+        tmpX = this.x;
+        tmpY = this.y - TILEHEIGHT;
+      break;
+      case 'down':
+        tmpX = this.x;
+        tmpY = this.y + TILEHEIGHT;
+      break;
     }
-    this.checkTreasureCollisions();
-}
+    // If player is not off edge of game canvas, set her new x,y
+    if (!offCanvasEdge(tmpX, tmpY)) {
+      this.x = tmpX;
+      this.y = tmpY;
+    }
+  // Now, check to see if she collided with (grabbed) a treasure
+  this.checkTreasureCollisions();
+  }
 }
 
 Player.prototype.checkEnemyCollisions = function() {
