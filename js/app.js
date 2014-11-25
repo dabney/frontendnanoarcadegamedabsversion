@@ -11,7 +11,7 @@ var MINSPEED = 50;
 var MAXSPEED = 350;
 var NUMENEMIES = 5;
 var DELTAOPACITY = .03;
-var COLLISIONSENSITIVITY = 50;
+var COLLISIONSENSITIVITY = 30;
 var NUMPLAYERLIVES = 3;
 var NUMTREASURES = 5;
 // An array of possible positions for treasures (only includes stone path; top row is 0)
@@ -94,9 +94,9 @@ Player.prototype.render = function() {
   if (gameOver) {
     ctx.font = "48pt Arial";
     if (this.numTreasures === NUMTREASURES) {
-      ctx.fillText('YOU WON!!!', 39, 200);}
+      ctx.fillText('YOU WON!!!', 53, CANVASHEIGHT/2);}
     else {
-      ctx.fillText('GAME OVER', 39, 200);}
+      ctx.fillText('GAME OVER', 53, CANVASHEIGHT/2);}
   }
   ctx.restore(); // restore context to previous state
 
@@ -104,25 +104,21 @@ Player.prototype.render = function() {
 
 // handle keystroke input
 Player.prototype.handleInput = function(direction) {
-  var tmpX;
-  var tmpY;
+  var tmpX = this.x;
+  var tmpY = this.y;
   // If the game is not over and the player is not dead, set potential new position bases on user input
   if (!gameOver || !player.alive) {
     switch(direction) {
       case 'left':
         tmpX = this.x - TILEWIDTH;
-        tmpY = this.y;
       break; 
       case 'right':
         tmpX = this.x + TILEWIDTH;
-        tmpY = this.y;
       break;
       case 'up':
-        tmpX = this.x;
         tmpY = this.y - TILEHEIGHT;
       break;
       case 'down':
-        tmpX = this.x;
         tmpY = this.y + TILEHEIGHT;
       break;
     }
@@ -149,16 +145,20 @@ Player.prototype.checkEnemyCollisions = function() {
 
 Player.prototype.checkTreasureCollisions = function() {
   var i;
-  // loop through treasures; if collision then add a treasure to player and call treasure's capture function
+  var currentTreasure;
+  // loop through treasures; if collision then add a treasure to player and call treasure's captureMe function
   for (i = 0; i < NUMTREASURES; i++) {
-    if (collisionDetected(this.x, this.y, allTreasures[i].x, allTreasures[i].y, COLLISIONSENSITIVITY)) {
-      this.numTreasures++;
-      allTreasures[i].capture();
-      // If player has captured all the treasures then game is over
-      if (this.numTreasures === NUMTREASURES) {
-            gameOver = true;
+    currentTreasure = allTreasures[i];
+    if (!currentTreasure.captured) {
+      if (collisionDetected(this.x, this.y, currentTreasure.x, currentTreasure.y, COLLISIONSENSITIVITY)) {
+        this.numTreasures++;
+        currentTreasure.captureMe();
       }
     }
+  }
+  // Check for game over condition: if player has captured all the treasures then game is over
+  if (this.numTreasures === NUMTREASURES) {
+    gameOver = true;
   }
 }
 
@@ -215,7 +215,7 @@ Treasure.prototype.render = function() {
 }
 
 // Called when player captures treasure
-Treasure.prototype.capture = function() {
+Treasure.prototype.captureMe = function() {
   // Set captured status to true
   this.captured = true;
 }
