@@ -58,17 +58,10 @@ Enemy.prototype.render = function() {
 var Player = function() {
 // The image for our player character to be loaded using the Resources helper
   this.sprite = 'images/char-cat-girl.png';
-  // Set initial position of player at bottom center tile
-  this.x = CANVASWIDTH/2 - TILEWIDTH/2;
-  this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
-  // Set initial state to be alive
-  this.alive = true;
-  // Set initial opacity to fully opaque; opacity will be decreased when player dies
-  this.opacity = 1.0;
-  // Set the initial lives to the NUMPLAYERLIVES constant
-  this.numLives = NUMPLAYERLIVES;
-  // Set the number of treasurers collected to zero
-  this.numTreasures = 0;
+  this.lifeIcon = 'images/Heart.png';
+  this.numLives = NUMPLAYERLIVES;  // Set the initial lives to the NUMPLAYERLIVES constant
+  this.numTreasures = 0;   // Set the number of treasurers collected to zero
+  this.reset();  // set default position, opacity, alive state
 }
 
 // Update the player's status
@@ -82,32 +75,28 @@ Player.prototype.update = function(dt) {
   // if player is not alive, start decreasing the player's opacity to create a fading away animation
     else {
         this.deathSequence();
-
     }
   }
 }
 
 // Draw the player on the screen, required method for game
-Player.prototype.render = function() { 
-    for (var i=0; i < this.numLives; i++) {
-        ctx.drawImage(Resources.get('images/Heart.png'), 10 + i*45, 50, 34, 57);
-    }
-   ctx.save()
-    ctx.globalAlpha = player.opacity;
-        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-                 if (gameOver) {
-        ctx.font = "48pt Arial";
-              if (this.numTreasures === NUMTREASURES) {
-        ctx.fillText('YOU WON!!!', 36, 200);}
-        else {
-        ctx.fillText('GAME OVER', 36, 200);}
-    }
-
-
-   ctx.restore();
-
-
-  ctx.fillText('Score ' + this.numTreasures, CANVASWIDTH - 100, 80);
+Player.prototype.render = function() {
+  // Draw player's life icon for remaining player's lives in the upper left corner 
+  for (var i=0; i < this.numLives; i++) {
+    ctx.drawImage(Resources.get(this.lifeIcon), 10 + i*45, 50, 34, 57);
+  }
+  ctx.save()
+  ctx.globalAlpha = player.opacity;
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  if (gameOver) {
+    ctx.font = "48pt Arial";
+    if (this.numTreasures === NUMTREASURES) {
+      ctx.fillText('YOU WON!!!', 39, 200);}
+    else {
+      ctx.fillText('GAME OVER', 39, 200);}
+  }
+  ctx.restore();
+  ctx.fillText('Score ' + this.numTreasures, CANVASWIDTH - 95, 80);
 
 }
 
@@ -179,16 +168,17 @@ Player.prototype.deathSequence = function() {
         }
         // if player still has lives left then reset him
         else {
-          this.resurrect();
+          this.reset();
         }
       }
   }
 
-Player.prototype.resurrect = function() {
-          this.alive = true;
-          this.opacity = 1;
-          this.x = CANVASWIDTH/2 - TILEWIDTH/2;
-          this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
+Player.prototype.reset = function() {
+            // Set initial position of player at bottom center tile
+  this.x = CANVASWIDTH/2 - TILEWIDTH/2;
+  this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
+  this.alive = true;   // Set initial state to be alive
+  this.opacity = 1.0;   // Set initial opacity to fully opaque; opacity will be decreased when player dies
       }
 
 // Treasures our player can collect
