@@ -106,7 +106,7 @@ Player.prototype.render = function() {
 Player.prototype.handleInput = function(direction) {
   var tmpX;
   var tmpY;
-  // If the game is not over and the player is not dead
+  // If the game is not over and the player is not dead, set potential new position bases on user input
   if (!gameOver || !player.alive) {
     switch(direction) {
       case 'left':
@@ -137,36 +137,42 @@ Player.prototype.handleInput = function(direction) {
 }
 
 Player.prototype.checkEnemyCollisions = function() {
-    var i;
+  var i;
+  // loop through enemies; if collision then subtract a life and kill the player
   for (i = 0; i < NUMENEMIES; i++) {
-        if (collisionDetected(this.x, this.y, allEnemies[i].x, allEnemies[i].y, COLLISIONSENSITIVITY)) {
-          this.numLives--;
-          this.alive = false;
-        }
-      }
+    if (collisionDetected(this.x, this.y, allEnemies[i].x, allEnemies[i].y, COLLISIONSENSITIVITY)) {
+      this.numLives--;
+      this.alive = false;
+    }
+  }
 }
 
 Player.prototype.checkTreasureCollisions = function() {
-     for (i = 0; i < NUMTREASURES; i++) {
-        if (collisionDetected(this.x, this.y, allTreasures[i].x, allTreasures[i].y, COLLISIONSENSITIVITY)) {
-          this.numTreasures++;
-          allTreasures[i].capture();
-          if (this.numTreasures === NUMTREASURES) {
+  var i;
+  // loop through treasures; if collision then add a treasure to player and call treasure's capture function
+  for (i = 0; i < NUMTREASURES; i++) {
+    if (collisionDetected(this.x, this.y, allTreasures[i].x, allTreasures[i].y, COLLISIONSENSITIVITY)) {
+      this.numTreasures++;
+      allTreasures[i].capture();
+      // If player has captured all the treasures then game is over
+      if (this.numTreasures === NUMTREASURES) {
             gameOver = true;
-          }
-        }
       }
     }
+  }
+}
 
+// Death sequence - incrementally decrease player sprite opacity to zero, if all lives gone then game is over
+// If lives remain then reset player so remaining lives can be used
 Player.prototype.deathSequence = function() {
       player.opacity = player.opacity - DELTAOPACITY;
-      // once player image is completely transparent
+      // once player image is completely transparent then death sequence is done
       if (player.opacity <= 0) {
       // if player's lives are gone then it's game over
         if (this.numLives === 0) {
           gameOver = true;
         }
-        // if player still has lives left then reset him
+        // if player still has lives left then reset her
         else {
           this.reset();
         }
@@ -174,124 +180,119 @@ Player.prototype.deathSequence = function() {
   }
 
 Player.prototype.reset = function() {
-            // Set initial position of player at bottom center tile
+  // Set initial position of player at bottom center tile
   this.x = CANVASWIDTH/2 - TILEWIDTH/2;
   this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
   this.alive = true;   // Set initial state to be alive
   this.opacity = 1.0;   // Set initial opacity to fully opaque; opacity will be decreased when player dies
-      }
+  }
 
 // Treasures our player can collect
 var Treasure = function() {
-    var randomPositionIndex = Math.floor(Math.random() * VALIDTREASUREPOSITIONS.length);
-    console.log('random index: ' + randomPositionIndex);
-    // The image/sprite for our treasures, this uses
-    // a helper we've provided to easily load images
-    this.sprite = 'images/Star.png';
-    console.log('random treasure position: ' + VALIDTREASUREPOSITIONS[randomPositionIndex].row + ', ' + VALIDTREASUREPOSITIONS[randomPositionIndex].col);
-     this.x = VALIDTREASUREPOSITIONS[randomPositionIndex].col * TILEWIDTH; // set treasuer x randomly within the width of the canvas
-    this.y = VALIDTREASUREPOSITIONS[randomPositionIndex].row * TILEHEIGHT - 12; //set treasure y randomly to center of one of stone rows
-VALIDTREASUREPOSITIONS.splice(randomPositionIndex, 1);
-this.captured = false;
+  var randomPositionIndex;
+
+  this.sprite = 'images/Star.png'; // Set the image/sprite for our treasures
+  this.captured = false; // This will be set to true if player captures treasure
+  // get a random index into the valid positions array
+  randomPositionIndex = Math.floor(Math.random() * VALIDTREASUREPOSITIONS.length);
+  // set x to the beginning of the column of our randomly grabbed position
+  this.x = VALIDTREASUREPOSITIONS[randomPositionIndex].col * TILEWIDTH;
+  // set y to the value beginning of the column of our randomly grabbed position, adjust to center
+  this.y = VALIDTREASUREPOSITIONS[randomPositionIndex].row * TILEHEIGHT - 12;
+  // remove the current position so it will not be re-used (should be saved if full game reset enabled)
+  VALIDTREASUREPOSITIONS.splice(randomPositionIndex, 1);
 }
 
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
 Treasure.prototype.update = function(dt) {
-
+    // nothing here yet; could be used to animate treasures
 }
 
-// Draw the enemy on the screen, required method for game
+// If treasure is not captured, draw it on the screen at its current x,y
 Treasure.prototype.render = function() {
-    if (!this.captured) {
-        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    }
+  if (!this.captured) {
+     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+  }
 }
 
-var offCanvasEdge = function(x, y) {
-    if (x < 0 || x + IMAGEWIDTH > CANVASWIDTH) {
-        return(true);
-    }
-    else if (y < 0 || y + IMAGEHEIGHT > CANVASHEIGHT) {
-        return(true);
-    }
-    else {
-        return(false);
-    }
-}
-
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
+// Called when player captures treasure
 Treasure.prototype.capture = function() {
-    this.captured = true;
-    this.x = -100;
-    this.y = -100;
+  // Set captured status to true
+  this.captured = true;
+}
 
+// A utility function to determine if one of our images is off the game canvas
+var offCanvasEdge = function(x, y) {
+  if (x < 0 || x + IMAGEWIDTH > CANVASWIDTH) {
+    return(true);
+  }
+  else if (y < 0 || y + IMAGEHEIGHT > CANVASHEIGHT) {
+    return(true);
+  }
+  else {
+    return(false);
+  }
 }
+
+// A utility function to detect if two points are within a certain distance of each other
 var collisionDetected = function(x1, y1, x2, y2, distance) {
- //   console.log('checking for collision', Math.abs(x1-x2), Math.abs(y1-y2));
-    if (Math.abs(x1 - x2) < distance && Math.abs(y1 - y2) < distance) {
-      //  console.log('collision detected');
-        return(true);
-    }
-    else {
-        return(false);
-    }
+  if (Math.abs(x1 - x2) < distance && Math.abs(y1 - y2) < distance) {
+    return(true);
+  }
+  else {
+    return(false);
+  }
 }
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
+
+// A function to create our array of enemies
 var createEnemies = function(numEnemies) {
   var enemyArray = [];
   var tmpEnemy;
   var i;
 
   for (i=0; i < numEnemies; i++) {
-      tmpEnemy = new Enemy();
-
-      enemyArray.push(tmpEnemy);
+    tmpEnemy = new Enemy();
+    enemyArray.push(tmpEnemy);
   }
   return(enemyArray);
-
 }
 
+// a function to create our player
 var createPlayer = function() {
     var tmpPlayer = new Player;
     return(tmpPlayer);
 }
 
+// a function to create our array of treasures
 var createTreasures = function(numTreasures) {
   var treasureArray = [];
   var tmpTreasure;
   var i;
 
   for (i=0; i < numTreasures; i++) {
-      tmpTreasure = new Treasure();
-      treasureArray.push(tmpTreasure);
+    tmpTreasure = new Treasure();
+    treasureArray.push(tmpTreasure);
   }
   return(treasureArray);
-
 }
 
-var gameSetup = function() {
-allEnemies = createEnemies(NUMENEMIES);
-allTreasures = createTreasures(NUMTREASURES);
-player = createPlayer();
+// A function to do the initial set up of our game entities
+var entitySetup = function() {
+  allEnemies = createEnemies(NUMENEMIES);
+  allTreasures = createTreasures(NUMTREASURES);
+  player = createPlayer();
 }
 
-gameSetup();
-
-
+// Call the initial setup of all our game entities
+entitySetup();
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
-    var allowedKeys = {
-        37: 'left',
-        38: 'up',
-        39: 'right',
-        40: 'down'
-    };
-
-    player.handleInput(allowedKeys[e.keyCode]);
+  var allowedKeys = {
+  37: 'left',
+  38: 'up',
+  39: 'right',
+  40: 'down'
+  };
+  player.handleInput(allowedKeys[e.keyCode]);
 });
