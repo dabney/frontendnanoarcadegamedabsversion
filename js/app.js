@@ -61,7 +61,11 @@ var Player = function() {
   this.lifeIcon = 'images/Heart.png';
   this.numLives = NUMPLAYERLIVES;  // Set the initial lives to the NUMPLAYERLIVES constant
   this.numTreasures = 0;   // Set the number of treasurers collected to zero
-  this.reset();  // set default position, opacity, alive state
+  // Set initial position of player at bottom center tile
+  this.x = CANVASWIDTH/2 - TILEWIDTH/2;
+  this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
+  this.alive = true;   // Set initial state to be alive
+  this.opacity = 1.0;   // Set initial opacity to fully opaque; opacity will be decreased when player dies
 }
 
 // Update the player's status
@@ -106,8 +110,8 @@ Player.prototype.render = function() {
 Player.prototype.handleInput = function(direction) {
   var tmpX = this.x;
   var tmpY = this.y;
-  // If the game is not over and the player is not dead, set potential new position bases on user input
-  if (!gameOver || !player.alive) {
+  // If the game is not over and the player is still alive, set potential new position bases on user input
+  if (!gameOver && this.alive) {
     switch(direction) {
       case 'left':
         tmpX = this.x - TILEWIDTH;
@@ -127,7 +131,7 @@ Player.prototype.handleInput = function(direction) {
       this.x = tmpX;
       this.y = tmpY;
     }
-  // Now, check to see if she collided with (grabbed) a treasure
+  // Now, check to see if she collided with (captured) a treasure
   this.checkTreasureCollisions();
   }
 }
@@ -180,11 +184,11 @@ Player.prototype.deathSequence = function() {
   }
 
 Player.prototype.reset = function() {
-  // Set initial position of player at bottom center tile
+  // reset position of player to bottom center tile
   this.x = CANVASWIDTH/2 - TILEWIDTH/2;
   this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
-  this.alive = true;   // Set initial state to be alive
-  this.opacity = 1.0;   // Set initial opacity to fully opaque; opacity will be decreased when player dies
+  this.alive = true;   // reset state to be alive
+  this.opacity = 1.0;   // reset opacity to fully opaque; opacity will be decreased when player dies
   }
 
 // Treasures our player can collect

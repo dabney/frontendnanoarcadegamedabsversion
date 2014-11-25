@@ -13,7 +13,6 @@
  * the canvas' context (ctx) object globally available to make writing app.js
  * a little simpler to work with.
  */
-console.log('at top of Engine.js');
 console.log('this:', this);
 
 var Engine = (function(global) {
