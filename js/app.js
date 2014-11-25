@@ -10,7 +10,7 @@ var IMAGEHEIGHT = 171;
 var MINSPEED = 50;
 var MAXSPEED = 350;
 var NUMENEMIES = 5;
-var DELTAOPACITY = .01;
+var DELTAOPACITY = .03;
 var COLLISIONSENSITIVITY = 50;
 var NUMPLAYERLIVES = 3;
 var NUMTREASURES = 5;
@@ -75,45 +75,16 @@ var Player = function() {
 Player.prototype.update = function(dt) {
   var i;
   if (!gameOver) {
-  // if player is still alive check for collisions with enemies and treasures
+  // if player is still alive check for collisions with enemies
     if (this.alive) {
-      for (i = 0; i < NUMENEMIES; i++) {
-        if (collisionDetected(this.x, this.y, allEnemies[i].x, allEnemies[i].y, COLLISIONSENSITIVITY)) {
-          this.numLives--;
-          this.alive = false;
-        }
-      }
-      for (i = 0; i < NUMTREASURES; i++) {
-        if (collisionDetected(this.x, this.y, allTreasures[i].x, allTreasures[i].y, COLLISIONSENSITIVITY)) {
-          this.numTreasures++;
-          allTreasures[i].capture();
-          if (this.numTreasures === NUMTREASURES) {
-            console.log('all treasures found');
-            gameOver = true;
-          }
-        }
-      }
+      this.checkEnemyCollisions();
     }
-// if player is not alive, start decreasing the player's opacity to create a fading away animation
-  else {
-    player.opacity = player.opacity - DELTAOPACITY;
-    // once player image is completely transparent
-    if (player.opacity <= 0) {
-    // if player's lives are gone then it's game over
-      if (this.numLives === 0) {
-        gameOver = true;
-      }
-      // if player still has lives left then reset him
-      else {
-        this.alive = true;
-        this.opacity = 1;
-        this.x = CANVASWIDTH/2 - TILEWIDTH/2;
-        this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
-      }
-    }
+  // if player is not alive, start decreasing the player's opacity to create a fading away animation
+    else {
+        this.deathSequence();
 
+    }
   }
-}
 }
 
 // Draw the player on the screen, required method for game
@@ -172,8 +143,53 @@ Player.prototype.handleInput = function(direction) {
                 }
             break;
     }
+    this.checkTreasureCollisions();
 }
 }
+
+Player.prototype.checkEnemyCollisions = function() {
+    var i;
+  for (i = 0; i < NUMENEMIES; i++) {
+        if (collisionDetected(this.x, this.y, allEnemies[i].x, allEnemies[i].y, COLLISIONSENSITIVITY)) {
+          this.numLives--;
+          this.alive = false;
+        }
+      }
+}
+
+Player.prototype.checkTreasureCollisions = function() {
+     for (i = 0; i < NUMTREASURES; i++) {
+        if (collisionDetected(this.x, this.y, allTreasures[i].x, allTreasures[i].y, COLLISIONSENSITIVITY)) {
+          this.numTreasures++;
+          allTreasures[i].capture();
+          if (this.numTreasures === NUMTREASURES) {
+            gameOver = true;
+          }
+        }
+      }
+    }
+
+Player.prototype.deathSequence = function() {
+      player.opacity = player.opacity - DELTAOPACITY;
+      // once player image is completely transparent
+      if (player.opacity <= 0) {
+      // if player's lives are gone then it's game over
+        if (this.numLives === 0) {
+          gameOver = true;
+        }
+        // if player still has lives left then reset him
+        else {
+          this.resurrect();
+        }
+      }
+  }
+
+Player.prototype.resurrect = function() {
+          this.alive = true;
+          this.opacity = 1;
+          this.x = CANVASWIDTH/2 - TILEWIDTH/2;
+          this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
+      }
 
 // Treasures our player can collect
 var Treasure = function() {
