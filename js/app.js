@@ -7,97 +7,98 @@ var TILEWIDTH = 101;
 var TILEHEIGHT = 83;
 var IMAGEWIDTH = 101;
 var IMAGEHEIGHT = 171;
-var MAXSPEED = 200;
-var NUMENEMIES = 3;
-var DELTATRANSPARENCY = .01;
+var MINSPEED = 50;
+var MAXSPEED = 350;
+var NUMENEMIES = 5;
+var DELTAOPACITY = .01;
 var COLLISIONSENSITIVITY = 50;
-var NUMPLAYERLIVES = 2;
+var NUMPLAYERLIVES = 3;
 var NUMTREASURES = 5;
+// An array of possible positions for treasures (only includes stone path; top row is 0)
 var VALIDTREASUREPOSITIONS = [
-    {row: 1,col:0}, {row: 1,col:1}, {row: 1,col:2}, {row: 1,col:3}, {row: 1,col:4}, 
-    {row: 2,col:0}, {row: 2,col:1}, {row: 2,col:2}, {row: 2,col:3}, {row: 2,col:4},
-    {row: 3,col:0}, {row: 3,col:1}, {row: 3,col:2}, {row: 3,col:3}, {row: 3,col:4}];
+  {row: 1,col:0}, {row: 1,col:1}, {row: 1,col:2}, {row: 1,col:3}, {row: 1,col:4},
+  {row: 2,col:0}, {row: 2,col:1}, {row: 2,col:2}, {row: 2,col:3}, {row: 2,col:4},
+  {row: 3,col:0}, {row: 3,col:1}, {row: 3,col:2}, {row: 3,col:3}, {row: 3,col:4}];
+
+// Some globally accessible variables for our game state and game entities
 var gameOver = false;
+var allEnemies = [];
+var allTreasures = [];
+var player = null;
 
 
 // Enemies our player must avoid
 var Enemy = function() {
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
-    this.sprite = 'images/enemy-bug.png';
-     this.x = Math.floor(Math.random() * CANVASWIDTH); // set enemy x randomly within the width of the canvas
-    this.y = (Math.floor(Math.random() * 3) + 1 )* TILEHEIGHT - 20; //set enemy y randomly to center of one of stone rows
-    this.speedMultiplier = Math.random() * MAXSPEED; // set the enemy speed randomly from 0 to MAXSPEED
-
+  // The image/sprite for our enemies, this uses
+  // a helper we've provided to easily load images
+  this.sprite = 'images/enemy-bug.png';
+  this.x = Math.floor(Math.random() * CANVASWIDTH); // set initial enemy x randomly within the width of the canvas
+  this.y = (Math.floor(Math.random() * 3) + 1 )* TILEHEIGHT - 20; //set enemy y so it is ~centered in rows 1-3 (the stone rows)
+  this.speedMultiplier = Math.random() * (MAXSPEED-MINSPEED) + MINSPEED; // set the enemy speed randomly from MINSPEED to MAXSPEED
 }
 
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
+// Update the enemy's position based on dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
-    if (!gameOver) {
+  if (!gameOver) {
+    // update the enemy x value for each tick based on his speed
     this.x = this.x + dt * this.speedMultiplier;
+    // if the enemy goes off the canvas to the right, reset his x value so he returns from the left
     if (this.x > ctx.canvas.width) {
-        this.x = 10;
+      this.x = -60;
     }
   }
 }
 
-// Draw the enemy on the screen, required method for game
+// Draw the enemy on the screen at his current x,y position
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
 // Player class
 var Player = function() {
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
-    this.sprite = 'images/char-cat-girl.png';
+// The image for our player character to be loaded using the Resources helper
+  this.sprite = 'images/char-cat-girl.png';
+  // Set initial position of player at bottom center tile
   this.x = CANVASWIDTH/2 - TILEWIDTH/2;
- this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
- this.alive = true;
- this.transparency = 1.0;
- this.numLives = NUMPLAYERLIVES;
- this.numTreasures = 0;
-
+  this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
+  // Set initial state to be alive
+  this.alive = true;
+  // Set initial opacity to fully opaque; opacity will be decreased when player dies
+  this.opacity = 1.0;
+  // Set the initial lives to the NUMPLAYERLIVES constant
+  this.numLives = NUMPLAYERLIVES;
+  // Set the number of treasurers collected to zero
+  this.numTreasures = 0;
 }
 
 // Update the player's status
 Player.prototype.update = function(dt) {
   var i;
-if (!gameOver) {
-// if player is still alive check for collisions with enemies and treasures
-  if (this.alive) {
-  for (i = 0; i < NUMENEMIES; i++) {
-
-      if (collisionDetected(this.x, this.y, allEnemies[i].x, allEnemies[i].y, COLLISIONSENSITIVITY)) {
-        this.numLives--;
-        this.alive = false;
-      }
-  }
-
-  for (i = 0; i < NUMTREASURES; i++) {
-      if (collisionDetected(this.x, this.y, allTreasures[i].x, allTreasures[i].y, COLLISIONSENSITIVITY)) {
-        this.numTreasures++;
-        allTreasures[i].capture();
-        if (this.numTreasures === NUMTREASURES) {
-            console.log('all treasures found');
-          gameOver = true;
+  if (!gameOver) {
+  // if player is still alive check for collisions with enemies and treasures
+    if (this.alive) {
+      for (i = 0; i < NUMENEMIES; i++) {
+        if (collisionDetected(this.x, this.y, allEnemies[i].x, allEnemies[i].y, COLLISIONSENSITIVITY)) {
+          this.numLives--;
+          this.alive = false;
         }
       }
-
-  }
-}
-// else start increasing the player's transparency to create a fading away animation
+      for (i = 0; i < NUMTREASURES; i++) {
+        if (collisionDetected(this.x, this.y, allTreasures[i].x, allTreasures[i].y, COLLISIONSENSITIVITY)) {
+          this.numTreasures++;
+          allTreasures[i].capture();
+          if (this.numTreasures === NUMTREASURES) {
+            console.log('all treasures found');
+            gameOver = true;
+          }
+        }
+      }
+    }
+// if player is not alive, start decreasing the player's opacity to create a fading away animation
   else {
-    player.transparency = player.transparency - DELTATRANSPARENCY;
+    player.opacity = player.opacity - DELTAOPACITY;
     // once player image is completely transparent
-    if (player.transparency <= 0) {
+    if (player.opacity <= 0) {
     // if player's lives are gone then it's game over
       if (this.numLives === 0) {
         gameOver = true;
@@ -105,12 +106,11 @@ if (!gameOver) {
       // if player still has lives left then reset him
       else {
         this.alive = true;
-        this.transparency = 1;
+        this.opacity = 1;
         this.x = CANVASWIDTH/2 - TILEWIDTH/2;
         this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
       }
     }
-    //    console.log('player.transparency: ' + player.transparency);
 
   }
 }
@@ -122,25 +122,21 @@ Player.prototype.render = function() {
         ctx.drawImage(Resources.get('images/Heart.png'), 10 + i*45, 50, 34, 57);
     }
    ctx.save()
-    ctx.globalAlpha = player.transparency;
-  //  ctx.translate(this.x, this.y);
-   // ctx.translate(IMAGEWIDTH/2, IMAGEHEIGHT);
-
-   // ctx.rotate(Math.PI/(2*player.transparency));
+    ctx.globalAlpha = player.opacity;
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
                  if (gameOver) {
         ctx.font = "48pt Arial";
               if (this.numTreasures === NUMTREASURES) {
-        ctx.fillText('YOU WON!!!', 28, 200);}
+        ctx.fillText('YOU WON!!!', 36, 200);}
         else {
-        ctx.fillText('GAME OVER', 28, 200);}
+        ctx.fillText('GAME OVER', 36, 200);}
     }
 
 
    ctx.restore();
 
 
-  ctx.fillText('Score ' + this.numTreasures, CANVASWIDTH - 50, 80);
+  ctx.fillText('Score ' + this.numTreasures, CANVASWIDTH - 100, 80);
 
 }
 
@@ -271,10 +267,14 @@ var createTreasures = function(numTreasures) {
 
 }
 
-var allEnemies = createEnemies(NUMENEMIES);
-var allTreasures = createTreasures(NUMTREASURES);
+var gameSetup = function() {
+allEnemies = createEnemies(NUMENEMIES);
+allTreasures = createTreasures(NUMTREASURES);
+player = createPlayer();
+}
 
-var player = createPlayer();
+gameSetup();
+
 
 
 // This listens for key presses and sends the keys to your

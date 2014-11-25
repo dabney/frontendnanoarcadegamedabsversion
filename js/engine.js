@@ -27,8 +27,10 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
-    canvas.width = 505;
-    canvas.height = 606;
+    canvas.width = CANVASWIDTH;
+    canvas.height = CANVASHEIGHT;
+    ctx.font = "14pt Arial";
+
     doc.body.appendChild(canvas);
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
