@@ -173,7 +173,7 @@ Player.prototype.deathSequence = function() {
       // once player image is completely transparent then death sequence is done
       if (player.opacity <= 0) {
       // if player's lives are gone then it's game over
-        if (this.numLives === 0) {
+        if (this.numLives <= 0) {
           gameOver = true;
         }
         // if player still has lives left then reset her
