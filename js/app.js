@@ -59,18 +59,29 @@ var NUMPLAYERLIVES = 3;
  */
 var NUMTREASURES = 5;
 /**
- * @constant VALIDTREASUREPOSITIONS
- * An array of possible positions for treasures (only includes stone path; top row is 0)
+ * @constant VALIDTREASUREPOSITIONS An array of possible positions for treasures
+ *  (only includes stone path; top row is 0)
  */
 var VALIDTREASUREPOSITIONS = [
   {row: 1,col:0}, {row: 1,col:1}, {row: 1,col:2}, {row: 1,col:3}, {row: 1,col:4},
   {row: 2,col:0}, {row: 2,col:1}, {row: 2,col:2}, {row: 2,col:3}, {row: 2,col:4},
   {row: 3,col:0}, {row: 3,col:1}, {row: 3,col:2}, {row: 3,col:3}, {row: 3,col:4}];
 
-// Some globally accessible variables for our game state and game entities
+/**
+ * @global gameOver a globally accessible variable to hold whether or not the game is over
+ */
 var gameOver = false;
+/**
+ * @global allEnemies a globally accessible array to hold the enemy objects
+ */
 var allEnemies = [];
+/**
+ * @global allTreasures a globally accessible array to hold the collectible treasure objects
+ */
 var allTreasures = [];
+/**
+ * @global player a globally accessible variable to hold the player object
+ */
 var player = null;
 
 
