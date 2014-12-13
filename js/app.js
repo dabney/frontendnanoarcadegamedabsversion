@@ -84,8 +84,12 @@ var allTreasures = [];
  */
 var player = null;
 
-
-// Enemies our player must avoid
+/** 
+ * Class Enemy
+ * The Enemy class is the template for the enemies.  It sets up an initial pseudorandom position
+ *  and speedmultiplier and stores the current state of the enemies
+ * @constructor
+ */
 var Enemy = function() {
   // The image/sprite for our enemies, this uses
   // a helper we've provided to easily load images
@@ -95,7 +99,12 @@ var Enemy = function() {
   this.speedMultiplier = Math.random() * (MAXSPEED-MINSPEED) + MINSPEED; // set the enemy speed randomly from MINSPEED to MAXSPEED
 };
 
-// Update the enemy's position based on dt, a time delta between ticks
+/**
+ * The update function for the Enemy class adjusts the x position based on the input, dt, delta time,
+ * and the speed multiplier.  Resets x to -60 when x is greater than the canvas width
+ * @param {number} dt This is the delta time
+ * 
+ */
 Enemy.prototype.update = function(dt) {
   if (!gameOver) {
     // update the enemy x value for each tick based on his speed
@@ -107,6 +116,9 @@ Enemy.prototype.update = function(dt) {
   }
 }
 
+/**
+ * The render function for the Enemy class draws the enemy on the screen and its current x,y position
+ */
 // Draw the enemy on the screen at his current x,y position
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -116,6 +128,7 @@ Enemy.prototype.render = function() {
  * Class Player
  * The Player class is the template for the player.  It sets up the initial state and stores
  * the current state of the player
+ * @constructor
  */
 var Player = function() {
 // The image for our player character to be loaded using the Resources helper
@@ -133,7 +146,7 @@ var Player = function() {
 /**
  * The update function for the Player class calls a collision check or death sequence if the
  * game is not over.
- * @param {number} dt This is the delta time/game tick
+ * @param {number} dt This is the delta time
  * 
  */
 Player.prototype.update = function(dt) {
