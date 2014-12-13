@@ -1,20 +1,67 @@
-// Some constants for reference
+/**
+ * @constant CANVASWIDTH the width of the game canvas
+ */
 var CANVASWIDTH = 505;
+/**
+ * @constant CANVASHEIGHT the height of the game canvas
+ */
 var CANVASHEIGHT = 606;
+/**
+ * @constant the number of rows of tiles in the game board
+ */
 var TILEROWS = 6;
+/**
+ * @constant the number of columns of tiles in the game board
+ */
 var TILECOLS = 5;
+/**
+ * @constant TILEWIDTH the width of the apparent horizontal surface of the isometric tiles used for the game
+ */
 var TILEWIDTH = 101;
+/**
+ * @constant TILEHEIGHT the height of the apparent horizontal surface of the isometric tiles used for the game
+ */
 var TILEHEIGHT = 83;
+/**
+ * @constant IMAGEWIDTH the width of the images used for the game
+ */
 var IMAGEWIDTH = 101;
+/**
+ * @constant IMAGEHEIGHT the height of the images used for the game
+ */
 var IMAGEHEIGHT = 171;
+/**
+ * @constant MINSPEED the min speed of the enemies; on enemy creation speed will be randomly set between MINSPEED and MAXSPEED
+ */
 var MINSPEED = 50;
+/**
+ * @constant MAXSPEED the max speed of the enemies; on enemy creation speed will be randomly set between MINSPEED and MAXSPEED
+ */
 var MAXSPEED = 350;
+/**
+ * @constant NUMENEMIES the number of enemies
+ */
 var NUMENEMIES = 5;
+/**
+ * @constant DELTAOPACITY tweak this to change how quickly the player disappears when she dies
+ */
 var DELTAOPACITY = .03;
+/**
+ * @constant COLLISIONSENSITIVITY tweak this to alter sensitivity of collision detection 
+ */
 var COLLISIONSENSITIVITY = 30;
+/**
+ * @constant NUMPLAYERLIVES the number of lives the player has before the game is over
+ */
 var NUMPLAYERLIVES = 3;
+/**
+ * @constant NUMTREASURES number of treasures to be displayed
+ */
 var NUMTREASURES = 5;
-// An array of possible positions for treasures (only includes stone path; top row is 0)
+/**
+ * @constant VALIDTREASUREPOSITIONS
+ * An array of possible positions for treasures (only includes stone path; top row is 0)
+ */
 var VALIDTREASUREPOSITIONS = [
   {row: 1,col:0}, {row: 1,col:1}, {row: 1,col:2}, {row: 1,col:3}, {row: 1,col:4},
   {row: 2,col:0}, {row: 2,col:1}, {row: 2,col:2}, {row: 2,col:3}, {row: 2,col:4},
@@ -35,7 +82,7 @@ var Enemy = function() {
   this.x = Math.floor(Math.random() * CANVASWIDTH); // set initial enemy x randomly within the width of the canvas
   this.y = (Math.floor(Math.random() * 3) + 1 )* TILEHEIGHT - 20; //set enemy y so it is ~centered in rows 1-3 (the stone rows)
   this.speedMultiplier = Math.random() * (MAXSPEED-MINSPEED) + MINSPEED; // set the enemy speed randomly from MINSPEED to MAXSPEED
-}
+};
 
 // Update the enemy's position based on dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
@@ -66,7 +113,7 @@ var Player = function() {
   this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
   this.alive = true;   // Set initial state to be alive
   this.opacity = 1.0;   // Set initial opacity to fully opaque; opacity will be decreased when player dies
-}
+};
 
 // Update the player's status
 Player.prototype.update = function(dt) {
@@ -189,7 +236,7 @@ Player.prototype.reset = function() {
   this.y = CANVASHEIGHT - IMAGEHEIGHT - TILEHEIGHT/2;
   this.alive = true;   // reset state to be alive
   this.opacity = 1.0;   // reset opacity to fully opaque; opacity will be decreased when player dies
-  }
+}
 
 // Treasures our player can collect
 var Treasure = function() {
@@ -205,7 +252,7 @@ var Treasure = function() {
   this.y = VALIDTREASUREPOSITIONS[randomPositionIndex].row * TILEHEIGHT - 12;
   // remove the current position so it will not be re-used (should be saved if full game reset enabled)
   VALIDTREASUREPOSITIONS.splice(randomPositionIndex, 1);
-}
+};
 
 Treasure.prototype.update = function(dt) {
     // nothing here yet; could be used to animate treasures
@@ -235,7 +282,7 @@ var offCanvasEdge = function(x, y) {
   else {
     return(false);
   }
-}
+};
 
 // A utility function to detect if two points are within a certain distance of each other
 var collisionDetected = function(x1, y1, x2, y2, distance) {
@@ -245,7 +292,7 @@ var collisionDetected = function(x1, y1, x2, y2, distance) {
   else {
     return(false);
   }
-}
+};
 
 // A function to create our array of enemies
 var createEnemies = function(numEnemies) {
@@ -258,13 +305,13 @@ var createEnemies = function(numEnemies) {
     enemyArray.push(tmpEnemy);
   }
   return(enemyArray);
-}
+};
 
 // a function to create our player
 var createPlayer = function() {
     var tmpPlayer = new Player;
     return(tmpPlayer);
-}
+};
 
 // a function to create our array of treasures
 var createTreasures = function(numTreasures) {
@@ -277,14 +324,14 @@ var createTreasures = function(numTreasures) {
     treasureArray.push(tmpTreasure);
   }
   return(treasureArray);
-}
+};
 
 // A function to do the initial set up of our game entities
 var entitySetup = function() {
   allEnemies = createEnemies(NUMENEMIES);
   allTreasures = createTreasures(NUMTREASURES);
   player = createPlayer();
-}
+};
 
 // Call the initial setup of all our game entities
 entitySetup();
