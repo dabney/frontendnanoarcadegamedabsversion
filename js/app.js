@@ -112,7 +112,11 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
-// Player class
+/** 
+ * Class Player
+ * The Player class is the template for the player.  It sets up the initial state and stores
+ * the current state of the player
+ */
 var Player = function() {
 // The image for our player character to be loaded using the Resources helper
   this.sprite = 'images/char-cat-girl.png';
@@ -126,7 +130,12 @@ var Player = function() {
   this.opacity = 1.0;   // Set initial opacity to fully opaque; opacity will be decreased when player dies
 };
 
-// Update the player's status
+/**
+ * The update function for the Player class calls a collision check or death sequence if the
+ * game is not over.
+ * @param {number} dt This is the delta time/game tick
+ * 
+ */
 Player.prototype.update = function(dt) {
   var i;
   if (!gameOver) {
@@ -141,7 +150,10 @@ Player.prototype.update = function(dt) {
   }
 }
 
-// Draw the player on the screen, required method for game
+/**
+ * The render function for the Player class draws the player, her remaining lives, and her score
+ * or an appropriate message for the player if the game is over
+ */
 Player.prototype.render = function() {
   // Draw player's life icon for remaining player's lives in the upper left corner 
   for (var i=0; i < this.numLives; i++) {
@@ -164,7 +176,10 @@ Player.prototype.render = function() {
 
 }
 
-// handle keystroke input
+/**
+ * The handleInput function for the Player class handles keyboard input from the user
+ * @param {string} direction The direction the user has input from the keyboard: 'left', 'right', 'up', 'down'
+ */
 Player.prototype.handleInput = function(direction) {
   var tmpX = this.x;
   var tmpY = this.y;
@@ -194,6 +209,12 @@ Player.prototype.handleInput = function(direction) {
   }
 }
 
+/**
+ * The checkEnemyCollisions function for the Player class checks to see if there is a collision
+ * between the player and one of the enemies in the allEnemies array based on their positions and
+ * the COLLISIONSENSITIVITY constant; if there has been a collision the number of lives is decremented
+ * and the player is marked as dead
+ */
 Player.prototype.checkEnemyCollisions = function() {
   var i;
   // loop through enemies; if collision then subtract a life and kill the player
@@ -205,6 +226,12 @@ Player.prototype.checkEnemyCollisions = function() {
   }
 }
 
+/**
+ * The checkTreasureCollisions function for the Player class checks to see if there is a collision
+ * between the player and one of the treasures in the allTreasures array based on their positions and
+ * the COLLISIONSENSITIVITY constant; if a collision is detected, the player's number of treasures is
+ * incremented and the treasure's capture function is called.
+ */
 Player.prototype.checkTreasureCollisions = function() {
   var i;
   var currentTreasure;
@@ -224,8 +251,10 @@ Player.prototype.checkTreasureCollisions = function() {
   }
 }
 
-// Death sequence - incrementally decrease player sprite opacity to zero, if all lives gone then game is over
-// If lives remain then reset player so remaining lives can be used
+/**
+ * The deathSequence function for the Player class animates a death sequence by incrementally decreasing
+ * sprite opacity to zero then calling a reset of the player if lives remain else ending the game
+ */
 Player.prototype.deathSequence = function() {
       player.opacity = player.opacity - DELTAOPACITY;
       // once player image is completely transparent then death sequence is done
@@ -240,7 +269,10 @@ Player.prototype.deathSequence = function() {
         }
       }
   }
-
+  
+/**
+ * The reset function for the Player class resets the position, alive state, and opacity
+ */
 Player.prototype.reset = function() {
   // reset position of player to bottom center tile
   this.x = CANVASWIDTH/2 - TILEWIDTH/2;
