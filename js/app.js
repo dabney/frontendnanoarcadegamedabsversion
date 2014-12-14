@@ -119,7 +119,6 @@ Enemy.prototype.update = function(dt) {
 /**
  * The render function for the Enemy class draws the enemy on the screen and its current x,y position
  */
-// Draw the enemy on the screen at his current x,y position
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
@@ -294,7 +293,12 @@ Player.prototype.reset = function() {
   this.opacity = 1.0;   // reset opacity to fully opaque; opacity will be decreased when player dies
 }
 
-// Treasures our player can collect
+/** 
+ * Class Treasure
+ * The Treasure class is the template for the treasures collected by the player. It sets up the initial
+ *  state and stores the current state of the treasure
+ * @constructor
+ */
 var Treasure = function() {
   var randomPositionIndex;
 
@@ -310,10 +314,18 @@ var Treasure = function() {
   VALIDTREASUREPOSITIONS.splice(randomPositionIndex, 1);
 };
 
+/**
+ * The update function for the Treasure class would update the treasure based on dt, delta time,
+ * of the game.
+ * @param {number} dt This is the delta time
+ */
 Treasure.prototype.update = function(dt) {
     // nothing here yet; could be used to animate treasures
 }
 
+/**
+ * The render function for the Treasure class draws the treasure if it is not already captured by the player
+ */
 // If treasure is not captured, draw it on the screen at its current x,y
 Treasure.prototype.render = function() {
   if (!this.captured) {
@@ -321,7 +333,9 @@ Treasure.prototype.render = function() {
   }
 }
 
-// Called when player captures treasure
+/**
+ * The captureMe function for the Treasure class is called to set the state of the treasure to captured
+ */
 Treasure.prototype.captureMe = function() {
   // Set captured status to true
   this.captured = true;
