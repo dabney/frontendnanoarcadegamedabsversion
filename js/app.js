@@ -344,6 +344,7 @@ Treasure.prototype.captureMe = function() {
  * A utility function to determine if one of our images is off the game canvas
  * @param {number} x - The x position of the image
  * @param {number} y - The y position of the image
+ * @return {boolean} Returns true if image is off the canvas else returns false
 */ 
 var offCanvasEdge = function(x, y) {
   if (x < 0 || x + IMAGEWIDTH > CANVASWIDTH) {
@@ -365,7 +366,8 @@ var offCanvasEdge = function(x, y) {
  * @param {number} x2 - The x value of the second point
  * @param {number} y2 - The y value of the second point
  * @param {number} distance - The distance beneath which a collision should be triggered
-*/ 
+ * @return {boolean} Returns true if a collision is detected else returns false
+ */ 
 var collisionDetected = function(x1, y1, x2, y2, distance) {
   if (Math.abs(x1 - x2) < distance && Math.abs(y1 - y2) < distance) {
     return(true);
@@ -378,6 +380,7 @@ var collisionDetected = function(x1, y1, x2, y2, distance) {
 /**
  * A function to create our array of enemies
  * @param {number} numEnemies - The number of enemies to create
+ * @return {array} Returns the array of Enemy objects
  */
 var createEnemies = function(numEnemies) {
   var enemyArray = [];
@@ -393,6 +396,7 @@ var createEnemies = function(numEnemies) {
 
 /**
  * A function to create our player
+ * @return {Player} Returns the new player object
  */
 var createPlayer = function() {
     var tmpPlayer = new Player;
@@ -402,6 +406,7 @@ var createPlayer = function() {
 /**
  * A function to create our array of treasures
  * @param {number} numTreasures - The number of treasures to create
+ * @return {array} Returns the array of Treasure objects
  */
 var createTreasures = function(numTreasures) {
   var treasureArray = [];
