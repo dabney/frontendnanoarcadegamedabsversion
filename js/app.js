@@ -326,7 +326,6 @@ Treasure.prototype.update = function(dt) {
 /**
  * The render function for the Treasure class draws the treasure if it is not already captured by the player
  */
-// If treasure is not captured, draw it on the screen at its current x,y
 Treasure.prototype.render = function() {
   if (!this.captured) {
      ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -341,7 +340,11 @@ Treasure.prototype.captureMe = function() {
   this.captured = true;
 }
 
-// A utility function to determine if one of our images is off the game canvas
+/**
+ * A utility function to determine if one of our images is off the game canvas
+ * @param {number} x - The x position of the image
+ * @param {number} y - The y position of the image
+*/ 
 var offCanvasEdge = function(x, y) {
   if (x < 0 || x + IMAGEWIDTH > CANVASWIDTH) {
     return(true);
@@ -354,7 +357,15 @@ var offCanvasEdge = function(x, y) {
   }
 };
 
-// A utility function to detect if two points are within a certain distance of each other
+/**
+ * A utility function to detect if two points are within a certain distance of each other to 
+ * determine if a collision has occurred.
+ * @param {number} x1 - The x value of the first point
+ * @param {number} y1 - The y value of the first point
+ * @param {number} x2 - The x value of the second point
+ * @param {number} y2 - The y value of the second point
+ * @param {number} distance - The distance beneath which a collision should be triggered
+*/ 
 var collisionDetected = function(x1, y1, x2, y2, distance) {
   if (Math.abs(x1 - x2) < distance && Math.abs(y1 - y2) < distance) {
     return(true);
@@ -364,7 +375,10 @@ var collisionDetected = function(x1, y1, x2, y2, distance) {
   }
 };
 
-// A function to create our array of enemies
+/**
+ * A function to create our array of enemies
+ * @param {number} numEnemies - The number of enemies to create
+ */
 var createEnemies = function(numEnemies) {
   var enemyArray = [];
   var tmpEnemy;
@@ -377,13 +391,18 @@ var createEnemies = function(numEnemies) {
   return(enemyArray);
 };
 
-// a function to create our player
+/**
+ * A function to create our player
+ */
 var createPlayer = function() {
     var tmpPlayer = new Player;
     return(tmpPlayer);
 };
 
-// a function to create our array of treasures
+/**
+ * A function to create our array of treasures
+ * @param {number} numTreasures - The number of treasures to create
+ */
 var createTreasures = function(numTreasures) {
   var treasureArray = [];
   var tmpTreasure;
@@ -396,18 +415,23 @@ var createTreasures = function(numTreasures) {
   return(treasureArray);
 };
 
-// A function to do the initial set up of our game entities
+/**
+ * A function to do the initial set up of our game entities
+ */
 var entitySetup = function() {
   allEnemies = createEnemies(NUMENEMIES);
   allTreasures = createTreasures(NUMTREASURES);
   player = createPlayer();
 };
 
-// Call the initial setup of all our game entities
+/**
+ * Call the initial setup of all our game entities
+ */
 entitySetup();
 
-// This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
+/**
+ * Add an event listener to listen for key presses and send the keys to Player.handleInput() method.
+ */
 document.addEventListener('keyup', function(e) {
   var allowedKeys = {
   37: 'left',
